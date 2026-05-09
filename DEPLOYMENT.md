@@ -32,6 +32,20 @@ Render sets `NODE_ENV=production` during install, which normally **omits `devDep
 5. Build: `npm run build` in `frontend/`.
 6. Serve the `frontend/dist` static files (S3+CloudFront, nginx, Vercel static, etc.). Configure SPA fallback to `index.html` for client-side routes.
 
+### Netlify (static site, monorepo)
+
+In the Netlify UI (or rely on [frontend/netlify.toml](frontend/netlify.toml)):
+
+| Setting | Value |
+|--------|--------|
+| **Base directory** | `frontend` |
+| **Package directory** | Leave empty, or `frontend` if Netlify asks and it must match the folder that contains `netlify.toml` — this repo keeps `netlify.toml` inside `frontend/`. |
+| **Build command** | `npm run build` |
+| **Publish directory** | `dist` (relative to base directory — **not** `frontend` or `/frontend/`) |
+| **Functions directory** | Leave default / blank unless you add serverless functions (this app does not use `netlify/functions` by default). |
+
+Set **`VITE_API_BASE_URL`** and **`VITE_WS_URL`** under Site settings → Environment variables (production). Add your Netlify site URL(s) to the backend **`FRONTEND_URL`** for CORS.
+
 ## Smoke test (production)
 
 - Open the deployed site, register or log in, confirm API calls return 200 and CORS errors are absent.
