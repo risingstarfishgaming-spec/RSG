@@ -15,6 +15,14 @@
 5. Start the process (e.g. `node dist/index.js` or your process manager) on the configured `PORT`.
 6. Ensure `/api` health checks succeed; if you use chat, confirm WebSocket upgrades work through your load balancer.
 
+### Render.com (Web Service)
+
+- **Root Directory:** `backend`
+- **Build Command:** `npm install && npm run build` (default install is fine)
+- **Start Command:** `npm start`
+
+Render sets `NODE_ENV=production` during install, which normally **omits `devDependencies`**. This repo keeps **`typescript` and `@types/*` in `dependencies`** so `tsc` still sees Express/Multer/etc. types. If you ever move them back to `devDependencies`, use **`npm install --include=dev && npm run build`** instead.
+
 ## Frontend
 
 1. Copy [frontend/.env.example](frontend/.env.example) to `frontend/.env.production` (or set vars in CI).
