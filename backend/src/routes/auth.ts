@@ -55,7 +55,7 @@ const registerSchema = z.object({
 })
 
 const loginSchema = z.object({
-  email: z.string().trim().email().max(255),
+  email: z.string().trim().email().max(255).toLowerCase(),
   password: z.string().min(1),
 })
 

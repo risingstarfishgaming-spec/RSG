@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
-    allowedHosts: ['super.localhost', '.localhost'],
+    allowedHosts: ['super.localhost', 'admin.localhost', '.localhost'],
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
