@@ -19,7 +19,7 @@ const nodeEnv = process.env.NODE_ENV ?? 'development'
 function resolveFrontendOrigins(): string[] {
   const raw = (process.env.FRONTEND_URL ?? 'http://localhost:5173')
     .split(',')
-    .map((s) => s.trim())
+    .map((s) => s.trim().replace(/\/$/, ''))
     .filter(Boolean)
   const set = new Set<string>(raw)
   if (nodeEnv !== 'production') {
