@@ -1,0 +1,24 @@
+# Pings the deployed backend on a schedule so Render free-tier Web Services
+# are less likely to spin down from idle. Set repo secret BACKEND_BASE_URL to
+# your API origin only, e.g. https://your-service.onrender.com (no trailing slash).
+
+name: Keep backend alive (Render)
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping API health
+        env:
+          BACKEND_BASE_URL: ${{ secrets.BACKEND_BASE_URL }}
+        run: |
+          if [ -z "$BACKEND_BASE_URL" ]; then
+            echo "Add repository secret BACKEND_BASE_URL (e.g. https://your-app.onrender.com)"
+            exit 1
+          fi
+          curl -fsS "${BACKEND_BASE_URL}/api/health"
