@@ -577,7 +577,9 @@ adminRouter.post('/sms/bulk', async (req, res, next) => {
     const users = await User.find({ _id: { $in: oids } })
       .select('phoneNumber')
       .lean()
-    const phoneNumbers = users.map((u) => u.phoneNumber)
+    const phoneNumbers = users
+      .map((u) => u.phoneNumber)
+      .filter((n): n is string => typeof n === 'string' && n.trim() !== '')
     const result = await sendBulkSms({
       message: parsed.data.message,
       phoneNumbers,
