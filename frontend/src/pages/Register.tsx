@@ -134,6 +134,7 @@ export default function Register() {
               autoComplete="given-name"
               enterKeyHint="next"
               autoFocus
+              placeholder="John"
               error={errors.firstName?.message}
               {...register('firstName')}
             />
@@ -142,6 +143,7 @@ export default function Register() {
               leftIcon="user"
               autoComplete="family-name"
               enterKeyHint="next"
+              placeholder="Doe"
               error={errors.lastName?.message}
               {...register('lastName')}
             />

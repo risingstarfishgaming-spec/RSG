@@ -35,7 +35,7 @@ export function FacebookReviewsCarousel() {
         <div className="text-center">
           <h2
             id="facebook-reviews-heading"
-            className="font-display text-2xl font-normal text-white sm:text-3xl md:text-4xl"
+            className="font-display text-2xl font-semibold text-white sm:text-3xl md:text-4xl"
           >
             Reviews from Facebook
           </h2>

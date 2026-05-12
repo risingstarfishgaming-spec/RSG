@@ -2,7 +2,7 @@ import { Link } from 'react-router'
 import { PageHero } from '../components/page/PageHero'
 import { LEGAL_ENTITY_NAME, LEGAL_JURISDICTION } from '../content/legalEntity'
 
-const section = 'space-y-4 text-sm leading-relaxed text-neutral-300 [&_h2]:font-display [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-normal [&_h2]:text-white [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_strong]:text-white [&_a]:text-[#FFD54A] [&_a]:underline-offset-2 hover:[&_a]:underline'
+const section = 'space-y-4 text-sm leading-relaxed text-neutral-300 [&_h2]:font-display [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:text-white [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_strong]:text-white [&_a]:text-[#FFD54A] [&_a]:underline-offset-2 hover:[&_a]:underline'
 
 export default function PrivacyPolicy() {
   return (

@@ -9,13 +9,13 @@ export default function NotFound() {
         showBadge={false}
         eyebrow="Lost at sea"
         title={
-          <span className="font-display text-gold-gradient text-[clamp(3.5rem,18vw,7rem)] leading-none drop-shadow-[0_8px_40px_rgba(0,0,0,0.45)]">
+          <span className="font-display text-hero-logo-title text-[clamp(3.5rem,18vw,7rem)] leading-none">
             404
           </span>
         }
         description={
           <>
-            <span className="mt-6 block font-display text-xl font-normal text-white sm:text-2xl">
+            <span className="mt-6 block font-display text-xl font-semibold text-white sm:text-2xl">
               Page not found
             </span>
             <span className="mt-3 block text-neutral-400">

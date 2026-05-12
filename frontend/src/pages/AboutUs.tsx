@@ -115,7 +115,7 @@ function SectionEyebrow({ children }: { children: ReactNode }) {
 
 function SectionHeading({ children }: { children: ReactNode }) {
   return (
-    <h2 className="font-display mt-2 text-2xl font-normal text-white sm:text-3xl md:text-4xl">
+    <h2 className="font-display mt-2 text-2xl font-semibold text-white sm:text-3xl md:text-4xl">
       {children}
     </h2>
   )
@@ -362,7 +362,7 @@ export default function AboutUs() {
               <p className="relative mt-5 text-xs font-bold uppercase tracking-[0.3em] text-[#FFD54A]">
                 Rising Star Fish Gaming
               </p>
-              <h3 className="font-display relative mt-3 text-2xl font-normal leading-tight text-white sm:text-3xl">
+              <h3 className="font-display relative mt-3 text-2xl font-semibold leading-tight text-white sm:text-3xl">
                 Play Smart.
                 <br />
                 Play Safe.

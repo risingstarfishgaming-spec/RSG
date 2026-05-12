@@ -18,7 +18,8 @@ export function scorePassword(pw: string): StrengthLevel {
     Number(/[^A-Za-z0-9]/.test(pw))
   if (variety >= 2) score++
   if (variety >= 3) score++
-  if (pw.length < 8) score = 0
+  // Before the 8-char minimum is met, still show variety-based progress (never "Good"/"Strong").
+  if (pw.length < 8) return Math.min(2, score) as StrengthLevel
   return Math.min(4, score) as StrengthLevel
 }
 

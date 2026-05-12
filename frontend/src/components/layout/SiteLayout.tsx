@@ -1,11 +1,30 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router'
 import { trackPageView } from '../../services/analyticsTracker'
 import { useAuthStore } from '../../stores/authStore'
-import { UserChatWidget } from '../chat/UserChatWidget'
 import { DrawerProfileSection, HeaderProfileMenu } from './ProfileMenu'
 import { Footer } from './Footer'
 import { UnverifiedEmailBanner } from './UnverifiedEmailBanner'
+
+const UserChatWidget = lazy(() =>
+  import('../chat/UserChatWidget').then((mod) => ({ default: mod.UserChatWidget })),
+)
+
+function RoutePendingFallback() {
+  return (
+    <div
+      className="flex flex-1 shrink-0 flex-col items-center justify-center py-24"
+      role="status"
+      aria-live="polite"
+      aria-label="Loading page"
+    >
+      <div
+        className="h-8 w-8 shrink-0 animate-spin rounded-full border-2 border-[#FFD54A]/25 border-t-[#FFD54A]"
+        aria-hidden
+      />
+    </div>
+  )
+}
 
 /** Rising star mark for RSFGaming */
 function LogoMark({ className }: { className?: string }) {
@@ -140,7 +159,7 @@ const mobileNavItems: {
 
 const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
-    'flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-2 transition-colors',
+    'font-display flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-2 font-bold transition-colors',
     isActive
       ? 'border border-[#FFD54A]/90 bg-yellow-400/10 text-[#FFD54A] shadow-[0_0_20px_rgba(250,204,21,0.2)]'
       : 'border border-transparent text-white/75',
@@ -148,7 +167,7 @@ const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 const desktopNavClass = ({ isActive }: { isActive: boolean }) =>
   [
-    'whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium transition-colors lg:px-3 lg:text-sm',
+    'font-display whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-bold transition-colors lg:px-3 lg:text-sm',
     isActive
       ? 'bg-yellow-400/10 text-[#FFD54A]'
       : 'text-neutral-400 hover:bg-neutral-800 hover:text-white',
@@ -156,21 +175,38 @@ const desktopNavClass = ({ isActive }: { isActive: boolean }) =>
 
 const drawerNavLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
-    'block rounded-lg px-4 py-3 text-neutral-200 transition hover:bg-white/[0.06]',
-    isActive ? 'border-l-2 border-[#FFD54A] bg-yellow-400/10 font-medium text-[#FFD54A]' : '',
+    'font-display block rounded-lg px-4 py-3 font-semibold text-neutral-200 transition hover:bg-white/[0.06]',
+    isActive ? 'border-l-2 border-[#FFD54A] bg-yellow-400/10 font-bold text-[#FFD54A]' : '',
   ].join(' ')
 
 export default function SiteLayout() {
   const [menuOpen, setMenuOpen] = useState(false)
   const user = useAuthStore((s) => s.user)
   const location = useLocation()
+  const mainScrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     trackPageView(location.pathname + location.search)
   }, [location.pathname, location.search])
 
+  useLayoutEffect(() => {
+    mainScrollRef.current?.scrollTo(0, 0)
+    window.scrollTo(0, 0)
+  }, [location.pathname])
+
   const isChatPage = location.pathname === '/chat'
   const isVerifyEmailPage = location.pathname === '/verify-email'
+  const isAuthPage =
+    location.pathname === '/login' ||
+    location.pathname === '/register' ||
+    location.pathname === '/forgot-password' ||
+    location.pathname === '/reset-password' ||
+    location.pathname === '/verify-email'
+  const isBonusesOrPlatformsPage =
+    location.pathname === '/bonuses' ||
+    location.pathname === '/platforms'
+  const showFooter =
+    !isChatPage && !isAuthPage && !isBonusesOrPlatformsPage
   const showVerifyBanner = !!user && !user.isEmailVerified && !isChatPage && !isVerifyEmailPage
 
   const authActions = user ? (
@@ -197,7 +233,7 @@ export default function SiteLayout() {
   return (
     <div
       className={`flex flex-col bg-[#0B1020] text-neutral-100 ${
-        isChatPage ? 'h-dvh max-h-dvh overflow-hidden' : 'min-h-dvh'
+        isChatPage ? 'h-dvh max-h-dvh overflow-hidden' : 'h-dvh max-h-dvh min-h-0 overflow-hidden'
       }`}
     >
       <header className="sticky top-0 z-40 shrink-0 border-b border-neutral-800/90 bg-[#0B1020]/80 pt-[env(safe-area-inset-top,0px)] shadow-[0_1px_0_rgba(255,255,255,0.03)] backdrop-blur backdrop-saturate-150">
@@ -217,7 +253,7 @@ export default function SiteLayout() {
               end
             >
               <LogoMark className="h-9 w-9 shrink-0" />
-              <span className="text-lg font-bold tracking-tight text-white lg:text-xl">
+              <span className="font-display text-xl font-extrabold tracking-tight text-white lg:text-2xl">
                 RSFGaming
               </span>
             </NavLink>
@@ -230,7 +266,7 @@ export default function SiteLayout() {
               end
             >
               <LogoMark className="h-8 w-8 shrink-0" />
-              <span className="truncate text-base font-bold tracking-tight text-white">
+              <span className="font-display truncate text-lg font-extrabold tracking-tight text-white sm:text-xl">
                 RSFGaming
               </span>
             </NavLink>
@@ -276,7 +312,7 @@ export default function SiteLayout() {
           />
           <div className="absolute left-0 top-0 flex h-full w-[min(100%,18rem)] flex-col border-r border-white/[0.06] bg-[#0E1525] p-4 shadow-xl">
             <div className="mb-6 flex items-center justify-between">
-              <span className="font-semibold text-white">Menu</span>
+              <span className="font-display text-lg font-bold text-white">Menu</span>
               <button
                 type="button"
                 className="rounded-lg p-2 text-neutral-400 hover:bg-neutral-800 hover:text-white"
@@ -351,21 +387,30 @@ export default function SiteLayout() {
       ) : null}
 
       <div
-        className={`flex min-h-0 flex-1 flex-col overflow-x-hidden pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] md:pb-0 ${
-          isChatPage ? 'overflow-hidden' : ''
+        ref={mainScrollRef}
+        className={`flex min-h-0 flex-1 flex-col overflow-x-hidden md:pb-0 ${
+          isChatPage ? 'overflow-hidden' : 'overflow-y-auto overscroll-y-contain'
+        } ${
+          isChatPage
+            ? ''
+            : 'pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] md:pb-0'
         }`}
       >
         {showVerifyBanner && user ? <UnverifiedEmailBanner user={user} /> : null}
-        <Outlet />
-        {!isChatPage && <Footer />}
+        <Suspense fallback={<RoutePendingFallback />}>
+          <Outlet />
+        </Suspense>
+        {showFooter ? <Footer /> : null}
       </div>
 
       {location.pathname !== '/chat' ? (
-        <UserChatWidget variant="fab" />
+        <Suspense fallback={null}>
+          <UserChatWidget variant="fab" />
+        </Suspense>
       ) : null}
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-30 border-t border-neutral-800/80 bg-black/90 pb-[env(safe-area-inset-bottom,0px)] pt-1.5 backdrop-blur-lg md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-neutral-800/80 bg-black/90 pb-[env(safe-area-inset-bottom,0px)] pt-1.5 backdrop-blur-lg md:hidden"
         aria-label="Mobile primary"
       >
         <div className="mx-auto flex max-w-lg items-stretch justify-between gap-1 px-2">
@@ -377,7 +422,7 @@ export default function SiteLayout() {
               className={mobileNavLinkClass}
             >
               <Icon className="h-6 w-6 shrink-0" />
-              <span className="max-w-[4.5rem] truncate text-center text-[10px] font-medium leading-tight">
+              <span className="max-w-[4.5rem] truncate text-center text-[11px] font-bold leading-tight">
                 {label}
               </span>
             </NavLink>

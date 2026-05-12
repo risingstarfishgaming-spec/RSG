@@ -37,7 +37,8 @@
 @layer base {
   html {
     @apply antialiased;
-    scroll-behavior: smooth;
+    /* Avoid smooth scrolling on programmatic scroll (route changes feel sluggish). */
+    scroll-behavior: auto;
     /* Softer tap flash on iOS / in-app browsers */
     -webkit-tap-highlight-color: rgba(255, 213, 74, 0.12);
     /* dvh first; fill-available helps some older in-app WebViews */
@@ -57,7 +58,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Sora', 'Inter', system-ui, sans-serif;
+    font-family: 'Nunito', 'Inter', system-ui, sans-serif;
     letter-spacing: -0.02em;
     text-rendering: optimizeLegibility;
   }
@@ -92,7 +93,7 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Sora', 'Inter', system-ui, sans-serif;
+    font-family: 'Nunito', 'Inter', system-ui, sans-serif;
     letter-spacing: -0.02em;
   }
 
@@ -108,6 +109,91 @@
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+  }
+
+  /* Home hero only — logo-inspired cosmic arcade title */
+  .text-hero-logo-title {
+    background: linear-gradient(
+      165deg,
+      #bae6fd 0%,
+      #7dd3fc 16%,
+      #a5b4fc 34%,
+      #d8b4fe 52%,
+      #f0abfc 68%,
+      #fde047 82%,
+      #fbbf24 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 2px 18px rgba(139, 92, 246, 0.32))
+      drop-shadow(0 3px 28px rgba(0, 0, 0, 0.55));
+  }
+
+  .hero-badge-cosmic {
+    border-color: rgba(212, 175, 55, 0.38);
+    background: linear-gradient(
+      135deg,
+      rgba(46, 8, 84, 0.42) 0%,
+      rgba(15, 10, 48, 0.55) 50%,
+      rgba(30, 20, 60, 0.48) 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(139, 92, 246, 0.12),
+      0 0 28px rgba(139, 92, 246, 0.18),
+      0 0 48px rgba(255, 213, 74, 0.06),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .hero-cta-primary-home {
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 8px 32px rgba(255, 213, 74, 0.38),
+      0 0 0 1px rgba(255, 213, 74, 0.2),
+      0 0 40px rgba(139, 92, 246, 0.12);
+  }
+  .hero-cta-primary-home:hover {
+    box-shadow:
+      0 12px 44px rgba(255, 213, 74, 0.48),
+      0 0 0 1px rgba(255, 213, 74, 0.28),
+      0 0 52px rgba(167, 139, 250, 0.16);
+  }
+  .hero-cta-primary-home::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgba(255, 255, 255, 0.22) 50%,
+      transparent 65%
+    );
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+    pointer-events: none;
+    border-radius: 9999px;
+  }
+  .hero-cta-primary-home:hover::after {
+    transform: translateX(120%);
+  }
+
+  .hero-cta-outline-home {
+    border-color: rgba(212, 175, 55, 0.28);
+    background: linear-gradient(
+      180deg,
+      rgba(46, 8, 84, 0.35) 0%,
+      rgba(11, 16, 32, 0.45) 100%
+    );
+    box-shadow:
+      0 0 24px rgba(139, 92, 246, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .hero-cta-outline-home:hover {
+    border-color: rgba(255, 213, 74, 0.45);
+    box-shadow:
+      0 0 28px rgba(255, 213, 74, 0.12),
+      0 0 40px rgba(167, 139, 250, 0.08);
   }
 
   .animate-home-float {
@@ -142,6 +228,28 @@
   .animate-hero-twinkle-slow {
     animation: hero-twinkle 7s ease-in-out infinite;
     animation-delay: -4s;
+  }
+
+  .animate-hero-cosmic-pulse {
+    animation: hero-cosmic-pulse 18s ease-in-out infinite;
+  }
+  .animate-hero-dust {
+    animation: hero-dust 22s ease-in-out infinite;
+  }
+  .animate-hero-dust-delayed {
+    animation: hero-dust 26s ease-in-out infinite;
+    animation-delay: -8s;
+  }
+  .animate-hero-dust-slow {
+    animation: hero-dust 30s ease-in-out infinite;
+    animation-delay: -14s;
+  }
+  .animate-hero-spotlight {
+    animation: hero-spotlight-drift 32s ease-in-out infinite;
+  }
+  .animate-hero-spotlight-delayed {
+    animation: hero-spotlight-drift 32s ease-in-out infinite;
+    animation-delay: -12s;
   }
 }
 
@@ -198,6 +306,46 @@
   50% {
     opacity: 0.95;
     transform: scale(1);
+  }
+}
+
+@keyframes hero-cosmic-pulse {
+  0%,
+  100% {
+    opacity: 0.42;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.58;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes hero-dust {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    opacity: 0.55;
+    transform: translate(3%, -8%) scale(1.05);
+  }
+  66% {
+    opacity: 0.4;
+    transform: translate(-4%, -14%) scale(0.95);
+  }
+}
+
+@keyframes hero-spotlight-drift {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateX(-2%) scaleY(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: translateX(2%) scaleY(1.02);
   }
 }
 
@@ -352,6 +500,12 @@
   .animate-hero-twinkle,
   .animate-hero-twinkle-delay,
   .animate-hero-twinkle-slow,
+  .animate-hero-cosmic-pulse,
+  .animate-hero-dust,
+  .animate-hero-dust-delayed,
+  .animate-hero-dust-slow,
+  .animate-hero-spotlight,
+  .animate-hero-spotlight-delayed,
   .animate-typing-dot,
   .animate-slide-up,
   .animate-slide-out-right,

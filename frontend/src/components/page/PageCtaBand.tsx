@@ -23,7 +23,7 @@ export function PageCtaBand({
           <div className="absolute left-1/4 top-0 h-32 w-32 rounded-full bg-[#FFD54A] blur-[90px]" />
           <div className="absolute bottom-0 right-1/4 h-28 w-28 rounded-full bg-amber-600 blur-[70px]" />
         </div>
-        <h2 className="font-display relative text-xl font-normal text-white sm:text-2xl md:text-3xl">
+        <h2 className="font-display relative text-xl font-semibold text-white sm:text-2xl md:text-3xl">
           {title}
         </h2>
         <p className="relative mx-auto mt-2 max-w-md text-sm text-amber-100/75 sm:text-base">

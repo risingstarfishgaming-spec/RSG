@@ -13,39 +13,56 @@ function HeroBackground() {
       className="pointer-events-none absolute inset-0 isolate overflow-hidden"
       aria-hidden
     >
-      {/* Depth base */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0c1929] via-[#2a3f8f] to-[#2a1458]" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#140822]/95 via-[#1a0a28]/50 to-[#0e4a6e]/35" />
+      {/* Cosmic depth — navy → royal purple → magenta (logo palette) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#050A30] via-[#1a0b38] to-[#2E0854]" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0a0418]/98 via-[#1f0a32]/55 to-[#0d1a3a]/40" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_85%_65%_at_50%_42%,rgba(139,0,139,0.22)_0%,rgba(46,8,84,0.12)_45%,transparent_72%)]" />
 
-      {/* Slow rotating aurora — smaller on phones to save GPU */}
+      {/* Soft radial “stage” glow behind hero copy */}
+      <div className="animate-hero-cosmic-pulse absolute left-1/2 top-[38%] h-[min(120vmin,720px)] w-[min(120vmin,720px)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(236,72,153,0.18)_0%,rgba(124,58,237,0.14)_35%,rgba(30,27,75,0)_68%)] mix-blend-screen sm:top-[40%]" />
+
+      {/* Cinematic top spotlights — cool blue rays */}
+      <div className="animate-hero-spotlight absolute inset-x-0 top-0 h-[min(70vh,520px)] opacity-[0.14] mix-blend-soft-light sm:opacity-[0.18]">
+        <div
+          className="absolute left-1/2 top-0 h-full w-[140%] -translate-x-1/2 bg-[conic-gradient(from_270deg_at_50%_0%,transparent_0deg,rgba(56,189,248,0.35)_52deg,rgba(147,197,253,0.2)_88deg,transparent_140deg)]"
+          aria-hidden
+        />
+      </div>
+      <div className="animate-hero-spotlight-delayed absolute inset-x-0 top-0 h-[min(55vh,420px)] opacity-[0.1] mix-blend-overlay sm:opacity-[0.12]">
+        <div
+          className="absolute left-[42%] top-0 h-full w-[95%] -translate-x-1/2 bg-[conic-gradient(from_285deg_at_50%_0%,transparent,rgba(167,139,250,0.28)_45%,transparent_95deg)]"
+          aria-hidden
+        />
+      </div>
+
+      {/* Slow rotating aurora — gold / violet / cyan (marquee energy, restrained) */}
       <div
-        className="animate-hero-aurora absolute left-1/2 top-1/2 h-[min(150vmin,680px)] w-[min(150vmin,680px)] opacity-[0.22] mix-blend-soft-light sm:h-[min(190vmin,880px)] sm:w-[min(190vmin,880px)] sm:opacity-[0.32]"
+        className="animate-hero-aurora absolute left-1/2 top-1/2 h-[min(150vmin,680px)] w-[min(150vmin,680px)] opacity-[0.2] mix-blend-soft-light sm:h-[min(190vmin,880px)] sm:w-[min(190vmin,880px)] sm:opacity-[0.28]"
         style={{
           transform: 'translate(-50%, -50%)',
           background:
-            'conic-gradient(from 210deg at 50% 45%, rgba(56,189,248,0.55) 0deg, rgba(167,139,250,0.5) 95deg, rgba(251,191,36,0.4) 185deg, rgba(34,211,238,0.45) 275deg, rgba(56,189,248,0.55) 360deg)',
+            'conic-gradient(from 200deg at 50% 45%, rgba(251,191,36,0.42) 0deg, rgba(167,139,250,0.48) 85deg, rgba(236,72,153,0.35) 165deg, rgba(56,189,248,0.42) 250deg, rgba(212,175,55,0.38) 360deg)',
         }}
       />
 
-      {/* Soft light beams (“caustics”) */}
-      <div className="absolute inset-0 opacity-40 mix-blend-overlay sm:opacity-50">
+      {/* Soft light beams (“caustics”) — cooler spotlight wash */}
+      <div className="absolute inset-0 opacity-[0.35] mix-blend-overlay sm:opacity-[0.45]">
         <div
-          className="animate-hero-caustics absolute -left-1/4 top-0 h-[120%] w-[70%] bg-gradient-to-br from-white/25 via-transparent to-transparent sm:w-[55%]"
+          className="animate-hero-caustics absolute -left-1/4 top-0 h-[120%] w-[70%] bg-gradient-to-br from-sky-200/22 via-transparent to-transparent sm:w-[55%]"
           style={{ transformOrigin: 'top left' }}
         />
         <div
-          className="animate-hero-caustics absolute -right-1/4 bottom-0 h-[100%] w-[60%] bg-gradient-to-tl from-cyan-300/20 via-transparent to-transparent [animation-delay:-8s] sm:w-[45%]"
+          className="animate-hero-caustics absolute -right-1/4 bottom-0 h-[100%] w-[60%] bg-gradient-to-tl from-fuchsia-300/15 via-transparent to-transparent [animation-delay:-8s] sm:w-[45%]"
           style={{ transformOrigin: 'bottom right' }}
         />
       </div>
 
-      {/* Floating color masses — tighter blur on small screens */}
-      <div className="absolute inset-0 opacity-[0.55] sm:opacity-[0.65]">
-        <div className="animate-home-float absolute -left-16 top-[6%] h-[min(52vw,380px)] w-[min(52vw,380px)] rounded-full bg-sky-300/45 blur-[48px] sm:-left-20 sm:h-[min(55vw,420px)] sm:w-[min(55vw,420px)] sm:blur-[80px]" />
-        <div className="animate-home-float-delayed absolute -right-12 top-[26%] h-[min(46vw,340px)] w-[min(46vw,340px)] rounded-full bg-violet-400/40 blur-[52px] sm:-right-16 sm:top-[28%] sm:h-[min(48vw,380px)] sm:w-[min(48vw,380px)] sm:blur-[90px]" />
-        <div className="animate-home-float-slow absolute bottom-[4%] left-[15%] hidden h-[min(38vw,280px)] w-[min(38vw,280px)] rounded-full bg-amber-200/30 blur-[44px] sm:bottom-[5%] sm:left-[20%] sm:block sm:h-[min(40vw,320px)] sm:w-[min(40vw,320px)] sm:blur-[70px]" />
-        {/* Extra golden pocket — mobile only (single extra warmth) */}
-        <div className="animate-home-float absolute -bottom-8 right-[10%] h-[min(42vw,260px)] w-[min(42vw,260px)] rounded-full bg-amber-400/25 blur-[40px] sm:hidden" />
+      {/* Floating color masses — purple / magenta / gold (cosmic lounge) */}
+      <div className="absolute inset-0 opacity-[0.52] sm:opacity-[0.62]">
+        <div className="animate-home-float absolute -left-16 top-[6%] h-[min(52vw,380px)] w-[min(52vw,380px)] rounded-full bg-violet-500/35 blur-[48px] sm:-left-20 sm:h-[min(55vw,420px)] sm:w-[min(55vw,420px)] sm:blur-[80px]" />
+        <div className="animate-home-float-delayed absolute -right-12 top-[26%] h-[min(46vw,340px)] w-[min(46vw,340px)] rounded-full bg-fuchsia-500/32 blur-[52px] sm:-right-16 sm:top-[28%] sm:h-[min(48vw,380px)] sm:w-[min(48vw,380px)] sm:blur-[90px]" />
+        <div className="animate-home-float-slow absolute bottom-[4%] left-[15%] hidden h-[min(38vw,280px)] w-[min(38vw,280px)] rounded-full bg-amber-300/28 blur-[44px] sm:bottom-[5%] sm:left-[20%] sm:block sm:h-[min(40vw,320px)] sm:w-[min(40vw,320px)] sm:blur-[70px]" />
+        <div className="animate-home-float absolute -bottom-8 right-[10%] h-[min(42vw,260px)] w-[min(42vw,260px)] rounded-full bg-[#D4AF37]/18 blur-[40px] sm:hidden" />
       </div>
 
       {/* Fish school — single SVG, low contrast fish shapes */}
@@ -77,6 +94,16 @@ function HeroBackground() {
         />
       </svg>
 
+      {/* Soft gold dust — very slow float */}
+      <div className="absolute inset-0">
+        <div className="animate-hero-dust absolute left-[18%] top-[32%] h-1 w-1 rounded-full bg-[#FFD54A]/50 blur-[1.5px] shadow-[0_0_8px_rgba(255,213,74,0.45)] sm:left-[20%]" />
+        <div className="animate-hero-dust-delayed absolute left-[55%] top-[24%] h-1.5 w-1.5 rounded-full bg-amber-200/45 blur-[2px] shadow-[0_0_10px_rgba(251,191,36,0.35)]" />
+        <div className="animate-hero-dust-slow absolute right-[22%] top-[38%] h-1 w-1 rounded-full bg-[#FFD54A]/40 blur-[1.5px]" />
+        <div className="animate-hero-dust absolute bottom-[42%] left-[28%] hidden h-1 w-1 rounded-full bg-amber-100/35 blur-[1.5px] sm:block" />
+        <div className="animate-hero-dust-delayed absolute right-[12%] top-[48%] h-1 w-1 rounded-full bg-[#f5d78e]/40 blur-[1.5px]" />
+        <div className="animate-hero-dust-slow absolute bottom-[36%] right-[30%] hidden h-1.5 w-1.5 rounded-full bg-[#FFD54A]/35 blur-[2px] sm:block" />
+      </div>
+
       {/* Twinkling stars — fewer on narrow viewports via hidden sm:block */}
       <div className="absolute inset-0 text-[#FFD54A]">
         <StarAccent className="animate-hero-twinkle absolute left-[12%] top-[18%] h-2 w-2 opacity-60 sm:left-[10%] sm:top-[15%] sm:h-2.5 sm:w-2.5" />
@@ -87,8 +114,8 @@ function HeroBackground() {
         <StarAccent className="animate-hero-twinkle-slow absolute bottom-[28%] right-[22%] h-1.5 w-1.5 sm:h-2 sm:w-2" />
       </div>
 
-      {/* Fine grid */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M60%200H0v60%22%20fill%3D%22none%22%20stroke%3D%22rgba(255%2C255%2C255%2C0.05)%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E')] opacity-70" />
+      {/* Fine grid — subtle violet (LED / marquee hint) */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M60%200H0v60%22%20fill%3D%22none%22%20stroke%3D%22rgba(196%2C181%2C253%2C0.07)%22%20stroke-width%3D%221%22%2F%3E%3C%2Fsvg%3E')] opacity-75" />
 
       {/* Film grain — improves depth without hurting readability */}
       <div
@@ -99,7 +126,7 @@ function HeroBackground() {
       />
 
       {/* Bottom vignette for wave handoff */}
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/55 via-[#0a0418]/25 to-transparent" />
     </div>
   )
 }
@@ -114,14 +141,14 @@ export default function Home() {
         <HeroBackground />
 
         <div className="relative z-10 mx-auto flex min-h-[min(88dvh,820px)] max-w-6xl flex-col items-center justify-center px-4 pb-28 pt-20 text-center sm:min-h-[min(92dvh,880px)] sm:px-6 sm:pb-32 sm:pt-28">
-          <div className="animate-home-shimmer mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/95 shadow-lg shadow-black/20 backdrop-blur-md">
-            <StarAccent className="h-3.5 w-3.5 text-[#FFD54A]" />
+          <div className="hero-badge-cosmic animate-home-shimmer mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-display text-xs font-bold uppercase tracking-[0.2em] text-white/95 shadow-lg shadow-black/25 backdrop-blur-md">
+            <StarAccent className="h-3.5 w-3.5 text-[#FFD54A] drop-shadow-[0_0_10px_rgba(255,213,74,0.45)]" />
             RSFGaming
-            <StarAccent className="h-3.5 w-3.5 text-[#FFD54A]" />
+            <StarAccent className="h-3.5 w-3.5 text-[#FFD54A] drop-shadow-[0_0_10px_rgba(255,213,74,0.45)]" />
           </div>
 
-          <h1 className="font-display max-w-4xl text-[clamp(2.5rem,8vw,4.75rem)] font-normal leading-[1.05] tracking-tight">
-            <span className="text-gold-gradient drop-shadow-[0_4px_24px_rgba(0,0,0,0.35)]">
+          <h1 className="font-display max-w-4xl text-[clamp(2.75rem,8.5vw,5.25rem)] font-bold leading-[1.05] tracking-tight">
+            <span className="text-hero-logo-title">
               Rising Star Fish Gaming
             </span>
           </h1>
@@ -133,13 +160,13 @@ export default function Home() {
           <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
             <Link
               to="/platforms"
-              className="btn-glow inline-flex items-center justify-center rounded-full bg-[#FFD54A] px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-neutral-950 shadow-[0_8px_32px_rgba(255,213,74,0.35)] transition hover:bg-[#FFE17A] hover:shadow-[0_12px_40px_rgba(255,213,74,0.45)]"
+              className="btn-glow hero-cta-primary-home inline-flex items-center justify-center rounded-full bg-[#FFD54A] px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-neutral-950 transition hover:bg-[#FFE17A]"
             >
               Platforms
             </Link>
             <Link
               to="/bonuses"
-              className="inline-flex items-center justify-center rounded-full border-2 border-white/40 bg-white/5 px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-white backdrop-blur-sm transition hover:border-white/60 hover:bg-white/10"
+              className="hero-cta-outline-home inline-flex items-center justify-center rounded-full border-2 px-8 py-3.5 text-sm font-semibold uppercase tracking-wide text-white/95 backdrop-blur-sm transition hover:bg-white/[0.07]"
             >
               Bonuses
             </Link>
@@ -167,7 +194,7 @@ export default function Home() {
       >
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-xl text-center">
-            <h2 className="font-display text-3xl font-normal text-white sm:text-4xl md:text-5xl">
+            <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl md:text-5xl">
               Platforms
             </h2>
             <p className="mt-3 text-sm text-neutral-500">
@@ -239,7 +266,7 @@ export default function Home() {
       {/* —— Hours —— */}
       <section className="border-y border-white/[0.06] bg-[#080809] px-4 py-14 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="font-display text-2xl font-normal text-white sm:text-3xl">
+          <h2 className="font-display text-2xl font-semibold text-white sm:text-3xl">
             Hours <span className="text-neutral-500">·</span> CST
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-neutral-400">
@@ -262,7 +289,7 @@ export default function Home() {
             <div className="absolute left-1/4 top-0 h-40 w-40 rounded-full bg-[#FFD54A] blur-[100px]" />
             <div className="absolute bottom-0 right-1/4 h-32 w-32 rounded-full bg-amber-600 blur-[80px]" />
           </div>
-          <h2 className="font-display relative text-xl font-normal text-white sm:text-2xl md:text-3xl">
+          <h2 className="font-display relative text-xl font-semibold text-white sm:text-2xl md:text-3xl">
             Get started
           </h2>
           <p className="relative mx-auto mt-2 max-w-sm text-sm text-amber-100/70">

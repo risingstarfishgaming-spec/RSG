@@ -50,7 +50,7 @@ export default function Platforms() {
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#FFD54A]">
               Partners
             </p>
-            <h2 className="font-display mt-2 text-2xl font-normal text-white sm:text-3xl md:text-4xl">
+            <h2 className="font-display mt-2 text-2xl font-semibold text-white sm:text-3xl md:text-4xl">
               Explore the lineup
             </h2>
           </div>

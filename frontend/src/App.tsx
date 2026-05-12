@@ -3,9 +3,8 @@ import { Toaster } from 'react-hot-toast'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { Loader2 } from 'lucide-react'
 import { RequireAuth } from './components/auth/RequireAuth'
+import SiteLayout from './components/layout/SiteLayout'
 import { isSuperStaffHost } from './utils/staffPortal'
-
-const SiteLayout = lazy(() => import('./components/layout/SiteLayout'))
 const SuperStaffRoutes = lazy(() => import('./staff/SuperStaffRoutes'))
 const AboutUs = lazy(() => import('./pages/AboutUs'))
 const Bonuses = lazy(() => import('./pages/Bonuses'))
@@ -84,47 +83,47 @@ export default function App() {
           },
         }}
       />
-      <Suspense fallback={<PageLoader />}>
-        {isSuperStaffHost() ? (
+      {isSuperStaffHost() ? (
+        <Suspense fallback={<PageLoader />}>
           <SuperStaffRoutes />
-        ) : (
-          <Routes>
-            <Route element={<SiteLayout />}>
-              <Route index element={<Home />} />
-              <Route path="games" element={<Games />} />
-              <Route path="platforms" element={<Platforms />} />
-              <Route path="bonuses" element={<Bonuses />} />
-              <Route path="chat" element={<Chat />} />
-              <Route path="about" element={<AboutUs />} />
-              <Route path="privacy" element={<PrivacyPolicy />} />
-              <Route path="terms" element={<TermsOfService />} />
-              <Route path="support" element={<Support />} />
-              <Route path="login" element={<Login />} />
-              <Route path="register" element={<Register />} />
-              <Route path="forgot-password" element={<ForgotPassword />} />
-              <Route path="reset-password" element={<ResetPassword />} />
-              <Route path="verify-email" element={<VerifyEmail />} />
-              <Route
-                path="profile"
-                element={
-                  <RequireAuth>
-                    <Profile />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="settings"
-                element={
-                  <RequireAuth>
-                    <Settings />
-                  </RequireAuth>
-                }
-              />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        )}
-      </Suspense>
+        </Suspense>
+      ) : (
+        <Routes>
+          <Route element={<SiteLayout />}>
+            <Route index element={<Home />} />
+            <Route path="games" element={<Games />} />
+            <Route path="platforms" element={<Platforms />} />
+            <Route path="bonuses" element={<Bonuses />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="about" element={<AboutUs />} />
+            <Route path="privacy" element={<PrivacyPolicy />} />
+            <Route path="terms" element={<TermsOfService />} />
+            <Route path="support" element={<Support />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="forgot-password" element={<ForgotPassword />} />
+            <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="verify-email" element={<VerifyEmail />} />
+            <Route
+              path="profile"
+              element={
+                <RequireAuth>
+                  <Profile />
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <RequireAuth>
+                  <Settings />
+                </RequireAuth>
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Route>
+        </Routes>
+      )}
     </BrowserRouter>
   )
 }

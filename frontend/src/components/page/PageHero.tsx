@@ -22,20 +22,18 @@ export function PageHero({
       <InnerPageHeroBg />
       <div className="relative z-10 mx-auto max-w-6xl px-4 pb-14 pt-12 text-center sm:px-6 sm:pb-16 sm:pt-16">
         {showBadge ? <RsBrandBadge /> : null}
-        <p className="text-xs font-medium uppercase tracking-[0.35em] text-white/75 sm:text-sm sm:tracking-[0.4em]">
+        <p className="text-xs font-semibold uppercase tracking-[0.35em] text-white/80 sm:text-sm sm:tracking-[0.4em]">
           {eyebrow}
         </p>
         <h1
           className={
             typeof title === 'string'
-              ? 'font-display mt-4 text-[clamp(2rem,6vw,3.25rem)] font-normal leading-tight tracking-tight'
+              ? 'font-display mt-4 text-[clamp(2.25rem,6.5vw,3.5rem)] font-bold leading-tight tracking-tight'
               : 'font-display mt-4 leading-none'
           }
         >
           {typeof title === 'string' ? (
-            <span className="text-gold-gradient drop-shadow-[0_4px_20px_rgba(0,0,0,0.35)]">
-              {title}
-            </span>
+            <span className="text-hero-logo-title">{title}</span>
           ) : (
             title
           )}

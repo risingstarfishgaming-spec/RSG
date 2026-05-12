@@ -47,13 +47,13 @@ const socials = [
 function FooterLinkGroup({ title, links }: { title: string; links: { label: string; to: string }[] }) {
   return (
     <div>
-      <h4 className="mb-4 text-sm font-semibold text-neutral-200">{title}</h4>
-      <ul className="space-y-2.5">
+      <h4 className="mb-2.5 text-xs font-semibold text-neutral-200 sm:mb-3 sm:text-sm">{title}</h4>
+      <ul className="space-y-2 sm:space-y-2.5">
         {links.map((l) => (
           <li key={l.to}>
             <Link
               to={l.to}
-              className="text-sm text-neutral-400 transition hover:text-[#FFD54A]"
+              className="text-xs text-neutral-400 transition hover:text-[#FFD54A] sm:text-sm"
             >
               {l.label}
             </Link>
@@ -66,21 +66,21 @@ function FooterLinkGroup({ title, links }: { title: string; links: { label: stri
 
 export function Footer() {
   return (
-    <footer className="mt-auto bg-[#080E1A] pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] md:pb-0">
+    <footer className="mt-auto bg-[#080E1A]">
       <div className="mx-auto h-px max-w-5xl bg-gradient-to-r from-transparent via-[#FFD54A]/20 to-transparent" />
 
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:py-16">
+        <div className="grid gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-4 lg:gap-10">
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link to="/" className="mb-4 inline-flex items-center gap-2.5">
-              <LogoMark className="h-8 w-8" />
-              <span className="text-lg font-bold text-neutral-100">RSFGaming</span>
+            <Link to="/" className="mb-3 inline-flex items-center gap-2 sm:mb-4">
+              <LogoMark className="h-7 w-7 sm:h-8 sm:w-8" />
+              <span className="text-base font-bold text-neutral-100 sm:text-lg">RSFGaming</span>
             </Link>
-            <p className="mt-3 max-w-xs text-sm leading-relaxed text-neutral-400">
+            <p className="mt-2 max-w-xs text-xs leading-relaxed text-neutral-400 sm:mt-3 sm:text-sm">
               A premium gaming community platform offering trusted support,
               fast recharges, and a welcoming player experience.
             </p>
-            <div className="mt-5 flex items-center gap-3">
+            <div className="mt-4 flex items-center gap-2.5 sm:mt-5 sm:gap-3">
               {socials.map(({ Icon, href, label }) => (
                 <a
                   key={label}
@@ -88,7 +88,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-neutral-400 transition hover:border-[#FFD54A]/30 hover:text-[#FFD54A]"
+                  className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.06] bg-white/[0.03] text-neutral-400 transition hover:border-[#FFD54A]/30 hover:text-[#FFD54A] sm:h-9 sm:w-9"
                 >
                   <Icon className="h-4 w-4" />
                 </a>
@@ -102,7 +102,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/[0.05] py-6 text-center text-xs text-neutral-500">
+      <div className="border-t border-white/[0.05] py-4 text-center text-[11px] text-neutral-500 sm:py-5 sm:text-xs">
         © {new Date().getFullYear()} Rising Star Fish Gaming. All rights reserved.
       </div>
     </footer>
