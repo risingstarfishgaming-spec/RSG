@@ -1,6 +1,6 @@
 # Pings the deployed backend on a schedule so Render free-tier Web Services
 # are less likely to spin down from idle. Set repo secret BACKEND_BASE_URL to
-# your API origin only, e.g. https://your-service.onrender.com (no trailing slash).
+# your API origin only, e.g. https://your-service.onrender.com (trailing slash ok).
 
 name: Keep backend alive (Render)
 
@@ -17,8 +17,38 @@ jobs:
         env:
           BACKEND_BASE_URL: ${{ secrets.BACKEND_BASE_URL }}
         run: |
-          if [ -z "$BACKEND_BASE_URL" ]; then
-            echo "Add repository secret BACKEND_BASE_URL (e.g. https://your-app.onrender.com)"
-            exit 1
+          set -u
+          if [ -z "${BACKEND_BASE_URL:-}" ]; then
+            echo "::warning::Repository secret BACKEND_BASE_URL is not set. Add it under Settings → Secrets and variables → Actions (e.g. https://your-app.onrender.com). Skipping ping."
+            exit 0
           fi
-          curl -fsS "${BACKEND_BASE_URL}/api/health"
+
+          BASE="${BACKEND_BASE_URL%/}"
+          URL="${BASE}/api/health"
+          echo "Pinging ${URL}"
+
+          # Render free tier can take 30-60s to wake from idle, so allow up to
+          # ~90s total wall time and retry on transient/5xx responses.
+          HTTP_CODE=$(curl \
+            --silent \
+            --show-error \
+            --location \
+            --connect-timeout 15 \
+            --max-time 90 \
+            --retry 5 \
+            --retry-delay 5 \
+            --retry-all-errors \
+            --output /tmp/health.out \
+            --write-out '%{http_code}' \
+            "$URL" || echo "000")
+
+          echo "HTTP ${HTTP_CODE}"
+          echo "----- response (first 500 bytes) -----"
+          head -c 500 /tmp/health.out || true
+          echo
+          echo "--------------------------------------"
+
+          case "$HTTP_CODE" in
+            2*) echo "OK"; exit 0 ;;
+            *)  echo "::error::Health check failed (HTTP ${HTTP_CODE}) for ${URL}"; exit 1 ;;
+          esac
