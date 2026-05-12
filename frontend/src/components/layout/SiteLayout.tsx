@@ -4,6 +4,8 @@ import { trackPageView } from '../../services/analyticsTracker'
 import { useAuthStore } from '../../stores/authStore'
 import { UserChatWidget } from '../chat/UserChatWidget'
 import { DrawerProfileSection, HeaderProfileMenu } from './ProfileMenu'
+import { Footer } from './Footer'
+import { UnverifiedEmailBanner } from './UnverifiedEmailBanner'
 
 /** Rising star mark for RSFGaming */
 function LogoMark({ className }: { className?: string }) {
@@ -15,9 +17,9 @@ function LogoMark({ className }: { className?: string }) {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden
     >
-      <circle cx="16" cy="16" r="14" className="fill-neutral-900 stroke-[#FFD700]/80" strokeWidth="1.5" />
+      <circle cx="16" cy="16" r="14" className="fill-neutral-900 stroke-[#FFD54A]/80" strokeWidth="1.5" />
       <path
-        className="fill-[#FFD700]"
+        className="fill-[#FFD54A]"
         d="M16 6l1.8 5.5h5.8l-4.7 3.4 1.8 5.5L16 17l-4.7 3.4 1.8-5.5-4.7-3.4h5.8L16 6z"
       />
     </svg>
@@ -140,7 +142,7 @@ const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
     'flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-xl px-1.5 py-2 transition-colors',
     isActive
-      ? 'border border-[#FFD700]/90 bg-yellow-400/10 text-[#FFD700] shadow-[0_0_20px_rgba(250,204,21,0.2)]'
+      ? 'border border-[#FFD54A]/90 bg-yellow-400/10 text-[#FFD54A] shadow-[0_0_20px_rgba(250,204,21,0.2)]'
       : 'border border-transparent text-white/75',
   ].join(' ')
 
@@ -148,14 +150,14 @@ const desktopNavClass = ({ isActive }: { isActive: boolean }) =>
   [
     'whitespace-nowrap rounded-lg px-2 py-1.5 text-xs font-medium transition-colors lg:px-3 lg:text-sm',
     isActive
-      ? 'bg-yellow-400/10 text-[#FFD700]'
+      ? 'bg-yellow-400/10 text-[#FFD54A]'
       : 'text-neutral-400 hover:bg-neutral-800 hover:text-white',
   ].join(' ')
 
 const drawerNavLinkClass = ({ isActive }: { isActive: boolean }) =>
   [
-    'block rounded-lg px-4 py-3 text-neutral-200 transition hover:bg-neutral-800',
-    isActive ? 'bg-yellow-400/10 font-medium text-[#FFD700]' : '',
+    'block rounded-lg px-4 py-3 text-neutral-200 transition hover:bg-white/[0.06]',
+    isActive ? 'border-l-2 border-[#FFD54A] bg-yellow-400/10 font-medium text-[#FFD54A]' : '',
   ].join(' ')
 
 export default function SiteLayout() {
@@ -168,6 +170,8 @@ export default function SiteLayout() {
   }, [location.pathname, location.search])
 
   const isChatPage = location.pathname === '/chat'
+  const isVerifyEmailPage = location.pathname === '/verify-email'
+  const showVerifyBanner = !!user && !user.isEmailVerified && !isChatPage && !isVerifyEmailPage
 
   const authActions = user ? (
     <div className="flex max-w-full items-center justify-end">
@@ -177,13 +181,13 @@ export default function SiteLayout() {
     <div className="flex max-w-[min(100%,9.5rem)] shrink-0 flex-wrap justify-end gap-1 sm:max-w-none sm:gap-2">
       <Link
         to="/login"
-        className="touch-manipulation rounded-lg bg-[#FFD700] px-2 py-2 text-[11px] font-bold leading-none text-black transition hover:bg-[#f5cc00] sm:px-3 sm:text-xs md:text-sm"
+        className="btn-glow touch-manipulation rounded-lg bg-[#FFD54A] px-2 py-2 text-[11px] font-bold leading-none text-black transition hover:bg-[#F5C73A] sm:px-3 sm:text-xs md:text-sm"
       >
         Login
       </Link>
       <Link
         to="/register"
-        className="touch-manipulation rounded-lg bg-[#FFD700] px-2 py-2 text-[11px] font-bold leading-none text-black transition hover:bg-[#f5cc00] sm:px-3 sm:text-xs md:text-sm"
+        className="btn-glow touch-manipulation rounded-lg bg-[#FFD54A] px-2 py-2 text-[11px] font-bold leading-none text-black transition hover:bg-[#F5C73A] sm:px-3 sm:text-xs md:text-sm"
       >
         Sign up
       </Link>
@@ -192,11 +196,11 @@ export default function SiteLayout() {
 
   return (
     <div
-      className={`flex flex-col bg-[#0a0a0b] text-neutral-100 ${
+      className={`flex flex-col bg-[#0B1020] text-neutral-100 ${
         isChatPage ? 'h-dvh max-h-dvh overflow-hidden' : 'min-h-dvh'
       }`}
     >
-      <header className="sticky top-0 z-40 shrink-0 border-b border-neutral-800/90 bg-[#0a0a0b]/98 pt-[env(safe-area-inset-top,0px)] backdrop-blur">
+      <header className="sticky top-0 z-40 shrink-0 border-b border-neutral-800/90 bg-[#0B1020]/80 pt-[env(safe-area-inset-top,0px)] shadow-[0_1px_0_rgba(255,255,255,0.03)] backdrop-blur backdrop-saturate-150">
         <div className="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center gap-1.5 px-3 py-2.5 sm:gap-2 sm:px-6 sm:py-3">
           <div className="flex min-w-0 items-center justify-start gap-3">
             <button
@@ -270,7 +274,7 @@ export default function SiteLayout() {
             aria-label="Close menu"
             onClick={() => setMenuOpen(false)}
           />
-          <div className="absolute left-0 top-0 flex h-full w-[min(100%,18rem)] flex-col bg-[#1a1a1a] p-4 shadow-xl">
+          <div className="absolute left-0 top-0 flex h-full w-[min(100%,18rem)] flex-col border-r border-white/[0.06] bg-[#0E1525] p-4 shadow-xl">
             <div className="mb-6 flex items-center justify-between">
               <span className="font-semibold text-white">Menu</span>
               <button
@@ -327,14 +331,14 @@ export default function SiteLayout() {
                 <div className="flex flex-col gap-2">
                   <Link
                     to="/login"
-                    className="rounded-lg bg-[#FFD700] py-3 text-center text-sm font-bold text-black"
+                    className="rounded-lg bg-[#FFD54A] py-3 text-center text-sm font-bold text-black"
                     onClick={() => setMenuOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="rounded-lg border border-[#FFD700]/50 py-3 text-center text-sm font-semibold text-[#FFD700]"
+                    className="rounded-lg border border-[#FFD54A]/50 py-3 text-center text-sm font-semibold text-[#FFD54A]"
                     onClick={() => setMenuOpen(false)}
                   >
                     Sign up
@@ -351,29 +355,9 @@ export default function SiteLayout() {
           isChatPage ? 'overflow-hidden' : ''
         }`}
       >
+        {showVerifyBanner && user ? <UnverifiedEmailBanner user={user} /> : null}
         <Outlet />
-        {location.pathname !== '/chat' ? (
-          <footer className="mt-auto border-t border-neutral-800/80 py-8 text-center text-sm text-neutral-500">
-            <div className="mb-4 flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs sm:text-sm">
-              <Link
-                to="/privacy"
-                className="text-neutral-400 transition hover:text-[#FFD700]"
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                to="/terms"
-                className="text-neutral-400 transition hover:text-[#FFD700]"
-              >
-                Terms of Service
-              </Link>
-            </div>
-            <p>
-              © {new Date().getFullYear()} Rising Star Fish Gaming. All rights
-              reserved.
-            </p>
-          </footer>
-        ) : null}
+        {!isChatPage && <Footer />}
       </div>
 
       {location.pathname !== '/chat' ? (
@@ -381,7 +365,7 @@ export default function SiteLayout() {
       ) : null}
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-30 border-t border-neutral-900 bg-black pb-[env(safe-area-inset-bottom,0px)] pt-1.5 md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-30 border-t border-neutral-800/80 bg-black/90 pb-[env(safe-area-inset-bottom,0px)] pt-1.5 backdrop-blur-lg md:hidden"
         aria-label="Mobile primary"
       >
         <div className="mx-auto flex max-w-lg items-stretch justify-between gap-1 px-2">

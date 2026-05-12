@@ -29,16 +29,24 @@ export const authRouter = Router()
 const registerSchema = z.object({
   firstName: z.string().trim().min(1, 'First name is required').max(80),
   lastName: z.string().trim().min(1, 'Last name is required').max(80),
-  email: z.string().trim().email('Invalid email').max(255),
+  email: z.string().trim().email('Invalid email').max(255).toLowerCase(),
   phoneNumber: z
     .string()
     .trim()
-    .min(1, 'Phone number is required')
-    .transform((s) => s.replace(/\D/g, ''))
+    .max(32)
+    .optional()
+    .transform((s) => {
+      if (!s) return undefined
+      return s.replace(/\D/g, '')
+    })
     .refine(
-      (digits) => digits.length >= 10 && digits.length <= 15,
+      (digits) =>
+        digits === undefined ||
+        digits === '' ||
+        (digits.length >= 10 && digits.length <= 15),
       'Enter a valid phone number (10–15 digits)',
-    ),
+    )
+    .transform((digits) => (digits ? digits : undefined)),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters')
@@ -101,7 +109,7 @@ function publicUser(u: {
   firstName: string
   lastName: string
   email: string
-  phoneNumber: string
+  phoneNumber?: string | null
   isEmailVerified: boolean
   referralCode: string
   referredBy?: unknown
@@ -111,7 +119,7 @@ function publicUser(u: {
     firstName: u.firstName,
     lastName: u.lastName,
     email: u.email,
-    phoneNumber: u.phoneNumber,
+    phoneNumber: u.phoneNumber ?? '',
     isEmailVerified: u.isEmailVerified,
     referralCode: u.referralCode,
   }
@@ -153,7 +161,7 @@ authRouter.post('/register', authRegisterLimiter, async (req, res, next) => {
       firstName,
       lastName,
       email,
-      phoneNumber,
+      ...(phoneNumber ? { phoneNumber } : {}),
       password: passwordHash,
       isEmailVerified: false,
       emailVerificationToken: verificationCode,
@@ -174,20 +182,26 @@ authRouter.post('/register', authRegisterLimiter, async (req, res, next) => {
       }
     }
 
-    const verifyPageUrl = `${env.frontendUrl.replace(/\/$/, '')}/verify-email?email=${encodeURIComponent(user.email)}`
+    const verifyPageUrl = `${env.publicAppUrl}/verify-email?email=${encodeURIComponent(user.email)}`
 
-    sendVerificationEmail({
-      toEmail: user.email,
-      toName: `${user.firstName} ${user.lastName}`,
-      verificationCode,
-      verifyPageUrl,
-    }).catch((e) => {
+    let emailSent = true
+    try {
+      await sendVerificationEmail({
+        toEmail: user.email,
+        toName: `${user.firstName} ${user.lastName}`,
+        verificationCode,
+        verifyPageUrl,
+      })
+    } catch (e) {
       logger.error('sendVerificationEmail failed:', e)
-    })
+      emailSent = false
+    }
 
     res.status(201).json({
-      message:
-        'Account created. Enter the 6-digit code from your email to verify your address before signing in.',
+      message: emailSent
+        ? 'Account created. Enter the 6-digit code from your email to verify your address.'
+        : "Account created, but we couldn't send the verification email right now. Use the Resend code button on the next page.",
+      emailSent,
       user: publicUser(user),
     })
   } catch (e: unknown) {
@@ -274,7 +288,7 @@ authRouter.post('/verify-email', authVerifyEmailLimiter, async (req, res, next) 
     if (!user) {
       throw new HttpError(
         400,
-        'Invalid or expired code. Check the code or request a new one from support.',
+        'Invalid or expired code. Double-check the digits or tap "Resend code" to get a fresh one.',
       )
     }
 
@@ -283,7 +297,24 @@ authRouter.post('/verify-email', authVerifyEmailLimiter, async (req, res, next) 
     user.emailVerificationExpires = null
     await user.save()
 
-    res.json({ message: 'Email verified. You can sign in now.' })
+    const token = signAccessToken({
+      sub: user._id.toString(),
+      email: user.email,
+    })
+
+    res.json({
+      message: "Email verified. You're signed in.",
+      token,
+      user: publicUser({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        isEmailVerified: user.isEmailVerified,
+        referralCode: user.referralCode,
+      }),
+    })
   } catch (e) {
     next(e)
   }
@@ -300,21 +331,18 @@ authRouter.post(
       }
       const { email } = parsed.data
 
+      const genericMessage =
+        'If an unverified account matches this email, we sent a new 6-digit code. It may take a minute to arrive.'
+
       const user = await User.findOne({ email }).select(
         '+emailVerificationToken +emailVerificationExpires',
       )
-      if (!user) {
-        throw new HttpError(
-          404,
-          "Incorrect email or user doesn't exist.",
-        )
-      }
 
-      if (user.isEmailVerified) {
-        throw new HttpError(
-          400,
-          'This email is already verified. You can sign in.',
-        )
+      // Quietly no-op for unknown emails and already-verified accounts so the
+      // response cannot be used to enumerate accounts or verification status.
+      if (!user || user.isEmailVerified) {
+        res.json({ message: genericMessage })
+        return
       }
 
       const verificationCode = generateEmailVerificationCode()
@@ -323,21 +351,25 @@ authRouter.post(
       user.emailVerificationExpires = verifyExpires
       await user.save()
 
-      const verifyPageUrl = `${env.frontendUrl.replace(/\/$/, '')}/verify-email?email=${encodeURIComponent(user.email)}`
+      const verifyPageUrl = `${env.publicAppUrl}/verify-email?email=${encodeURIComponent(user.email)}`
 
-      sendVerificationEmail({
-        toEmail: user.email,
-        toName: `${user.firstName} ${user.lastName}`,
-        verificationCode,
-        verifyPageUrl,
-      }).catch((e) => {
+      try {
+        await sendVerificationEmail({
+          toEmail: user.email,
+          toName: `${user.firstName} ${user.lastName}`,
+          verificationCode,
+          verifyPageUrl,
+        })
+      } catch (e) {
         logger.error('sendVerificationEmail (resend) failed:', e)
-      })
+        throw new HttpError(
+          503,
+          "We couldn't send your verification email right now. Try again in a minute.",
+          'EMAIL_SEND_FAILED',
+        )
+      }
 
-      res.json({
-        message:
-          'We sent a new 6-digit code to your inbox. It may take a minute to arrive.',
-      })
+      res.json({ message: genericMessage })
     } catch (e) {
       next(e)
     }
@@ -363,12 +395,15 @@ authRouter.post('/forgot-password', authForgotPasswordLimiter, async (req, res, 
     if (!parsed.success) {
       throw new HttpError(400, 'Invalid email')
     }
+
+    const genericMessage =
+      'If an account exists for this email, we sent a 6-digit code. Enter it on the next step with your new password.'
+
     const user = await User.findOne({ email: parsed.data.email })
     if (!user) {
-      throw new HttpError(
-        404,
-        "Incorrect email or user doesn't exist.",
-      )
+      // Quietly no-op so the response cannot be used to enumerate accounts.
+      res.json({ message: genericMessage })
+      return
     }
 
     const resetCode = generateEmailVerificationCode()
@@ -377,21 +412,25 @@ authRouter.post('/forgot-password', authForgotPasswordLimiter, async (req, res, 
     user.passwordResetExpires = resetExpires
     await user.save()
 
-    const resetPageUrl = `${env.frontendUrl.replace(/\/$/, '')}/reset-password?email=${encodeURIComponent(user.email)}`
+    const resetPageUrl = `${env.publicAppUrl}/reset-password?email=${encodeURIComponent(user.email)}`
 
-    sendPasswordResetEmail({
-      toEmail: user.email,
-      toName: `${user.firstName} ${user.lastName}`,
-      resetCode,
-      resetPageUrl,
-    }).catch((e) => {
+    try {
+      await sendPasswordResetEmail({
+        toEmail: user.email,
+        toName: `${user.firstName} ${user.lastName}`,
+        resetCode,
+        resetPageUrl,
+      })
+    } catch (e) {
       logger.error('sendPasswordResetEmail failed:', e)
-    })
+      throw new HttpError(
+        503,
+        "We couldn't send the reset email right now. Try again in a minute.",
+        'EMAIL_SEND_FAILED',
+      )
+    }
 
-    res.json({
-      message:
-        'We emailed a 6-digit code to this address. Enter it on the next step with your new password.',
-    })
+    res.json({ message: genericMessage })
   } catch (e) {
     next(e)
   }
@@ -422,9 +461,30 @@ authRouter.post('/reset-password', authResetPasswordLimiter, async (req, res, ne
     user.password = await bcrypt.hash(password, 12)
     user.passwordResetToken = null
     user.passwordResetExpires = null
+    // Bumping passwordChangedAt invalidates any JWT issued before this moment;
+    // the new JWT below is dated `iat` ≈ now and survives thanks to the skew
+    // buffer in the authenticate middleware.
+    user.passwordChangedAt = new Date()
     await user.save()
 
-    res.json({ message: 'Password updated. You can sign in now.' })
+    const token = signAccessToken({
+      sub: user._id.toString(),
+      email: user.email,
+    })
+
+    res.json({
+      message: "Password updated. You're signed in.",
+      token,
+      user: publicUser({
+        _id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
+        isEmailVerified: user.isEmailVerified,
+        referralCode: user.referralCode,
+      }),
+    })
   } catch (e) {
     next(e)
   }

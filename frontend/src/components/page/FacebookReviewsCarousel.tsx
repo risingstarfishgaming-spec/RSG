@@ -28,7 +28,7 @@ export function FacebookReviewsCarousel() {
 
   return (
     <section
-      className="border-t border-white/[0.06] bg-[#0a0a0b] px-4 py-12 sm:px-6 sm:py-16"
+      className="border-t border-white/[0.06] bg-[#0B1020] px-4 py-12 sm:px-6 sm:py-16"
       aria-labelledby="facebook-reviews-heading"
     >
       <div className="mx-auto max-w-3xl">
@@ -45,7 +45,7 @@ export function FacebookReviewsCarousel() {
               href={FACEBOOK_REVIEWS_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-[#FFD700]/90 underline decoration-[#FFD700]/40 underline-offset-2 transition hover:text-[#FFD700]"
+              className="font-medium text-[#FFD54A]/90 underline decoration-[#FFD54A]/40 underline-offset-2 transition hover:text-[#FFD54A]"
             >
               Facebook Page
             </a>
@@ -56,7 +56,7 @@ export function FacebookReviewsCarousel() {
         <div className="relative mt-10">
           <div className="rounded-3xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-white/[0.02] px-6 py-10 shadow-[0_24px_60px_rgba(0,0,0,0.35)] sm:px-10 sm:py-12">
             <div
-              className="flex justify-center gap-0.5 text-[#FFD700]"
+              className="flex justify-center gap-0.5 text-[#FFD54A]"
               aria-hidden
             >
               {Array.from({ length: 5 }).map((_, i) => (
@@ -88,7 +88,7 @@ export function FacebookReviewsCarousel() {
               <button
                 type="button"
                 onClick={() => go(-1)}
-                className="absolute left-1 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#0a0a0b]/95 text-white shadow-lg backdrop-blur-sm transition hover:border-[#FFD700]/40 hover:bg-[#141416] sm:left-0 sm:h-11 sm:w-11 sm:-translate-x-3"
+                className="absolute left-1 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#0B1020]/95 text-white shadow-lg backdrop-blur-sm transition hover:border-[#FFD54A]/40 hover:bg-[#141416] sm:left-0 sm:h-11 sm:w-11 sm:-translate-x-3"
                 aria-label="Previous review"
               >
                 <ChevronLeft className="h-5 w-5" strokeWidth={2} />
@@ -96,7 +96,7 @@ export function FacebookReviewsCarousel() {
               <button
                 type="button"
                 onClick={() => go(1)}
-                className="absolute right-1 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#0a0a0b]/95 text-white shadow-lg backdrop-blur-sm transition hover:border-[#FFD700]/40 hover:bg-[#141416] sm:right-0 sm:h-11 sm:w-11 sm:translate-x-3"
+                className="absolute right-1 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-[#0B1020]/95 text-white shadow-lg backdrop-blur-sm transition hover:border-[#FFD54A]/40 hover:bg-[#141416] sm:right-0 sm:h-11 sm:w-11 sm:translate-x-3"
                 aria-label="Next review"
               >
                 <ChevronRight className="h-5 w-5" strokeWidth={2} />
@@ -120,7 +120,7 @@ export function FacebookReviewsCarousel() {
                 onClick={() => setIndex(i)}
                 className={`h-2 rounded-full transition-all ${
                   i === index
-                    ? 'w-8 bg-[#FFD700]'
+                    ? 'w-8 bg-[#FFD54A]'
                     : 'w-2 bg-white/20 hover:bg-white/35'
                 }`}
                 aria-label={`Show review ${i + 1} of ${n}`}

@@ -15,26 +15,32 @@ export async function registerAccount(payload: {
   firstName: string
   lastName: string
   email: string
-  phoneNumber: string
+  phoneNumber?: string
   password: string
   referralCode?: string
-}): Promise<{ message: string; user: AuthUser }> {
+}): Promise<{ message: string; user: AuthUser; emailSent: boolean }> {
   const res = await fetch(apiUrl('/auth/register'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
   if (!res.ok) throw new Error(await readError(res))
-  return res.json() as Promise<{ message: string; user: AuthUser }>
+  return res.json() as Promise<{
+    message: string
+    user: AuthUser
+    emailSent: boolean
+  }>
 }
 
 export class LoginError extends Error {
   readonly apiCode?: string
+  readonly httpStatus: number
 
-  constructor(message: string, apiCode?: string) {
+  constructor(message: string, httpStatus: number, apiCode?: string) {
     super(message)
     this.name = 'LoginError'
     this.apiCode = apiCode
+    this.httpStatus = httpStatus
   }
 }
 
@@ -57,7 +63,7 @@ export async function loginAccount(payload: {
     } catch {
       /* keep message from statusText */
     }
-    throw new LoginError(message, apiCode)
+    throw new LoginError(message, res.status, apiCode)
   }
   return res.json() as Promise<{ token: string; user: AuthUser }>
 }
@@ -65,14 +71,18 @@ export async function loginAccount(payload: {
 export async function verifyEmailWithCode(payload: {
   email: string
   code: string
-}): Promise<{ message: string }> {
+}): Promise<{ message: string; token?: string; user?: AuthUser }> {
   const res = await fetch(apiUrl('/auth/verify-email'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
   if (!res.ok) throw new Error(await readError(res))
-  return res.json() as Promise<{ message: string }>
+  return res.json() as Promise<{
+    message: string
+    token?: string
+    user?: AuthUser
+  }>
 }
 
 export async function resendVerificationCode(
@@ -111,12 +121,16 @@ export async function resetPasswordWithCode(payload: {
   email: string
   code: string
   password: string
-}): Promise<{ message: string }> {
+}): Promise<{ message: string; token?: string; user?: AuthUser }> {
   const res = await fetch(apiUrl('/auth/reset-password'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
   if (!res.ok) throw new Error(await readError(res))
-  return res.json() as Promise<{ message: string }>
+  return res.json() as Promise<{
+    message: string
+    token?: string
+    user?: AuthUser
+  }>
 }

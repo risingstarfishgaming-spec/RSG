@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 const urlRx = /(https?:\/\/[^\s]+)/g
 
-const defaultLinkClass = 'break-all text-[#FFD700] underline'
+const defaultLinkClass = 'break-all text-[#FFD54A] underline'
 
 export type LinkifyOptions = {
   linkClassName?: string

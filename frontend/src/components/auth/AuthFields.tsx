@@ -11,10 +11,10 @@ import {
 } from './AuthIcons'
 
 const fieldShell =
-  'flex w-full min-h-12 items-stretch overflow-hidden rounded-2xl border border-white/10 bg-black/35 text-base text-white transition focus-within:border-[#FFD700]/45 focus-within:ring-1 focus-within:ring-[#FFD700]/20'
+  'flex w-full min-h-12 items-stretch overflow-hidden rounded-2xl border border-white/10 bg-black/35 text-base text-white transition focus-within:border-[#FFD54A]/45 focus-within:ring-1 focus-within:ring-[#FFD54A]/20'
 const fieldShellError = 'border-red-500/45 focus-within:border-red-500/50 focus-within:ring-red-500/15'
 const iconBox =
-  'flex w-11 shrink-0 items-center justify-center border-r border-white/[0.06] text-neutral-500 focus-within:text-[#FFD700]/80'
+  'flex w-11 shrink-0 items-center justify-center border-r border-white/[0.06] text-neutral-500 focus-within:text-[#FFD54A]/80'
 
 type IconName = 'user' | 'email' | 'phone' | 'tag'
 
@@ -66,7 +66,12 @@ type PasswordFieldProps = {
   label: ReactNode
   error?: string
   registration: UseFormRegisterReturn
-} & Pick<ComponentProps<'input'>, 'autoComplete' | 'enterKeyHint' | 'placeholder'>
+  /** Optional helper text shown below the field (e.g. password rules). */
+  hint?: ReactNode
+} & Pick<
+  ComponentProps<'input'>,
+  'autoComplete' | 'enterKeyHint' | 'placeholder' | 'autoFocus'
+>
 
 export function AuthPasswordField({
   label,
@@ -75,6 +80,8 @@ export function AuthPasswordField({
   autoComplete,
   enterKeyHint,
   placeholder,
+  autoFocus,
+  hint,
 }: PasswordFieldProps) {
   const [show, setShow] = useState(false)
 
@@ -93,14 +100,15 @@ export function AuthPasswordField({
           autoComplete={autoComplete}
           enterKeyHint={enterKeyHint}
           placeholder={placeholder}
+          autoFocus={autoFocus}
           {...registration}
         />
         <button
           type="button"
-          tabIndex={-1}
-          className="flex w-11 shrink-0 touch-manipulation items-center justify-center text-neutral-500 transition hover:text-[#FFD700]/90"
+          className="flex w-11 shrink-0 touch-manipulation items-center justify-center text-neutral-500 transition hover:text-[#FFD54A]/90"
           onClick={() => setShow((s) => !s)}
           aria-label={show ? 'Hide password' : 'Show password'}
+          aria-pressed={show}
         >
           {show ? (
             <IconEyeSlash className="h-5 w-5" />
@@ -109,6 +117,11 @@ export function AuthPasswordField({
           )}
         </button>
       </div>
+      {hint && !error ? (
+        <span className="mt-1.5 block text-xs leading-snug text-neutral-500">
+          {hint}
+        </span>
+      ) : null}
       {error ? (
         <span className="mt-1.5 block text-sm text-red-400/95 sm:text-xs">
           {error}

@@ -82,7 +82,7 @@ export default function Bonuses() {
   }
 
   return (
-    <main className="bg-[#0a0a0b]">
+    <main className="bg-[#0B1020]">
       <PageHero
         eyebrow="Promotions"
         title="Bonuses"
@@ -92,10 +92,10 @@ export default function Bonuses() {
       {user && token ? (
         <section className="border-b border-white/[0.06] px-4 py-10 sm:px-6">
           <div className="mx-auto max-w-5xl">
-            <div className="relative overflow-hidden rounded-2xl border border-[#FFD700]/25 bg-gradient-to-br from-[#FFD700]/12 via-white/[0.04] to-transparent p-6 sm:p-8">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,215,0,0.12),transparent_55%)]" />
+            <div className="relative overflow-hidden rounded-2xl border border-[#FFD54A]/25 bg-gradient-to-br from-[#FFD54A]/12 via-white/[0.04] to-transparent p-6 sm:p-8">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,213,74,0.12),transparent_55%)]" />
               <div className="relative">
-                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#FFD700]">
+                <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#FFD54A]">
                   Your referral code
                 </p>
                 <p className="mt-2 max-w-xl text-sm text-neutral-400">
@@ -103,7 +103,7 @@ export default function Bonuses() {
                   up. {referralLoading ? 'Refreshing…' : null}
                 </p>
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <code className="min-h-[3rem] rounded-xl border border-white/10 bg-black/50 px-4 py-3 font-mono text-lg font-semibold tracking-wider text-[#FFD700] sm:text-xl">
+                  <code className="min-h-[3rem] rounded-xl border border-white/10 bg-black/50 px-4 py-3 font-mono text-lg font-semibold tracking-wider text-[#FFD54A] sm:text-xl">
                     {user.referralCode?.trim()
                       ? user.referralCode
                       : '—'}
@@ -112,7 +112,7 @@ export default function Bonuses() {
                     type="button"
                     onClick={copyCode}
                     disabled={!user.referralCode?.trim()}
-                    className="rounded-full border border-[#FFD700]/40 bg-[#FFD700]/10 px-5 py-2.5 text-sm font-semibold text-[#FFD700] transition hover:bg-[#FFD700]/20 disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full border border-[#FFD54A]/40 bg-[#FFD54A]/10 px-5 py-2.5 text-sm font-semibold text-[#FFD54A] transition hover:bg-[#FFD54A]/20 disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     {copyDone ? 'Copied' : 'Copy code'}
                   </button>
@@ -135,10 +135,10 @@ export default function Bonuses() {
         </section>
       ) : null}
 
-      <section className="px-4 py-14 sm:px-6 sm:py-20">
+      <section className="px-4 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-6xl">
           <div className="text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#FFD700]">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#FFD54A]">
               Live & upcoming
             </p>
             <h2 className="font-display mt-2 text-2xl font-normal text-white sm:text-3xl md:text-4xl">
@@ -164,7 +164,7 @@ export default function Bonuses() {
               <button
                 type="button"
                 onClick={() => setCatalogRetryKey((k) => k + 1)}
-                className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-[#FFD700]/40 hover:text-[#FFD700]"
+                className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:border-[#FFD54A]/40 hover:text-[#FFD54A]"
               >
                 Try again
               </button>
@@ -179,7 +179,7 @@ export default function Bonuses() {
                 const status = bonusStatusLabel(b)
                 return (
                   <li key={b._id}>
-                    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-transparent transition hover:-translate-y-0.5 hover:border-[#FFD700]/35 hover:shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
+                    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-transparent transition hover:-translate-y-0.5 hover:border-[#FFD54A]/35 hover:shadow-[0_24px_60px_rgba(0,0,0,0.35)]">
                       {b.image ? (
                         <div className="aspect-[16/9] w-full overflow-hidden bg-black/40">
                           <img
@@ -191,7 +191,7 @@ export default function Bonuses() {
                       ) : null}
                       <div className="flex flex-1 flex-col p-6">
                         <div className="flex items-start justify-between gap-3">
-                          <span className="inline-flex rounded-lg bg-[#FFD700]/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#FFD700]">
+                          <span className="inline-flex rounded-lg bg-[#FFD54A]/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#FFD54A]">
                             {formatEnumLabel(b.bonusType)}
                           </span>
                           <span
@@ -208,7 +208,7 @@ export default function Bonuses() {
                           {b.title}
                         </h3>
                         {b.bonusValue ? (
-                          <p className="mt-1 text-sm font-medium text-[#FFD700]/90">
+                          <p className="mt-1 text-sm font-medium text-[#FFD54A]/90">
                             {b.bonusValue}
                           </p>
                         ) : null}
@@ -242,7 +242,7 @@ export default function Bonuses() {
                                 setClaimingId(null)
                               }
                             }}
-                            className="mt-4 w-full rounded-xl border border-[#FFD700]/40 bg-[#FFD700]/10 py-2.5 text-sm font-semibold text-[#FFD700] transition hover:bg-[#FFD700]/20 disabled:opacity-50"
+                            className="mt-4 w-full rounded-xl border border-[#FFD54A]/40 bg-[#FFD54A]/10 py-2.5 text-sm font-semibold text-[#FFD54A] transition hover:bg-[#FFD54A]/20 disabled:opacity-50"
                             aria-busy={claimingId === b._id}
                           >
                             {claimingId === b._id ? 'Claiming…' : 'Claim offer'}

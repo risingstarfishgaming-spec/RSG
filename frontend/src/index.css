@@ -1,39 +1,109 @@
 @import 'tailwindcss';
 
+/*
+ * Rising Star Fish Gaming color tokens. Centralised here so future components
+ * can reference the brand palette via utility classes (e.g. `bg-rsfg-card`,
+ * `text-rsfg-gold`). Tailwind v4 auto-generates utilities from `@theme`.
+ *
+ * The neutral palette is overridden so the existing `text-neutral-*` classes
+ * across the codebase shift onto the new bluer, more premium text scale with
+ * zero file edits.
+ */
+@theme {
+  --color-rsfg-bg: #0B1020;
+  --color-rsfg-bg-2: #111827;
+  --color-rsfg-card: #151D31;
+  --color-rsfg-hover: #1B2540;
+  --color-rsfg-gold: #FFD54A;
+  --color-rsfg-gold-hover: #FFE17A;
+  --color-rsfg-cyan: #2EC5FF;
+  --color-rsfg-success: #22C55E;
+  --color-rsfg-warning: #F59E0B;
+  --color-rsfg-text: #F5F7FA;
+  --color-rsfg-text-2: #A8B0C3;
+  --color-rsfg-text-muted: #6B7280;
+  --color-rsfg-border: #25304A;
+  --shadow-rsfg-glow: 0 0 32px rgba(255, 213, 74, 0.15);
+  --shadow-rsfg-cyan-glow: 0 0 32px rgba(46, 197, 255, 0.12);
+
+  --color-neutral-100: #F5F7FA;
+  --color-neutral-200: #E2E7F0;
+  --color-neutral-300: #C9CFDE;
+  --color-neutral-400: #A8B0C3;
+  --color-neutral-500: #6B7280;
+  --color-neutral-600: #4B5366;
+}
+
 @layer base {
   html {
     @apply antialiased;
     scroll-behavior: smooth;
     /* Softer tap flash on iOS / in-app browsers */
-    -webkit-tap-highlight-color: rgba(255, 215, 0, 0.12);
+    -webkit-tap-highlight-color: rgba(255, 213, 74, 0.12);
     /* dvh first; fill-available helps some older in-app WebViews */
     min-height: 100dvh;
     min-height: -webkit-fill-available;
   }
   body {
-    @apply m-0 min-h-dvh bg-[#0a0a0b] text-neutral-100;
+    @apply m-0 min-h-dvh bg-[#0B1020] text-neutral-100;
     font-family:
-      'Outfit',
+      'Inter',
       system-ui,
       -apple-system,
       Segoe UI,
       sans-serif;
+    letter-spacing: -0.011em;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Sora', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
+    text-rendering: optimizeLegibility;
+  }
+
+  /*
+   * Chrome/Edge/Safari autofill paints its own background + text color and
+   * ignores Tailwind utilities, which produced unreadable white-text-on-light
+   * autofill on the dark auth forms. Keep the field's own background and
+   * text color by neutralising autofill styling.
+   */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active,
+  textarea:-webkit-autofill,
+  textarea:-webkit-autofill:hover,
+  textarea:-webkit-autofill:focus,
+  textarea:-webkit-autofill:active,
+  select:-webkit-autofill,
+  select:-webkit-autofill:hover,
+  select:-webkit-autofill:focus,
+  select:-webkit-autofill:active {
+    -webkit-text-fill-color: currentColor;
+    -webkit-background-clip: text;
+    background-clip: text;
+    caret-color: currentColor;
+    transition:
+      background-color 9999s ease-in-out 0s,
+      color 9999s ease-in-out 0s;
   }
 }
 
 @layer utilities {
   .font-display {
-    font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
+    font-family: 'Sora', 'Inter', system-ui, sans-serif;
+    letter-spacing: -0.02em;
   }
 
   .text-gold-gradient {
     background: linear-gradient(
       135deg,
-      #fff9e6 0%,
-      #ffd700 35%,
+      #fff4c2 0%,
+      #ffd54a 35%,
       #f59e0b 55%,
-      #ffd700 75%,
-      #fef3c7 100%
+      #ffd54a 75%,
+      #ffeaa0 100%
     );
     -webkit-background-clip: text;
     background-clip: text;
@@ -200,6 +270,75 @@
   }
 }
 
+/* Announcement bar: one line at a time (loading-tip style) */
+@keyframes announcement-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle glow pulse for premium buttons */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 16px rgba(255, 213, 74, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 213, 74, 0.3);
+  }
+}
+
+@layer utilities {
+  .animate-announcement-in {
+    animation: announcement-in 0.65s ease-out both;
+  }
+
+  .card-premium {
+    @apply rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-transparent;
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 0.3s ease,
+      box-shadow 0.3s ease;
+  }
+  .card-premium:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 213, 74, 0.3);
+    box-shadow:
+      0 20px 50px rgba(0, 0, 0, 0.4),
+      0 0 30px rgba(255, 213, 74, 0.06);
+  }
+
+  .btn-glow {
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.3s ease,
+      transform 0.2s ease;
+  }
+  .btn-glow:hover {
+    box-shadow: 0 0 20px rgba(255, 213, 74, 0.25);
+  }
+  .btn-glow:active {
+    transform: scale(0.98);
+  }
+
+  .section-divide {
+    @apply border-t border-white/[0.06];
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+  @media (min-width: 640px) {
+    .section-divide {
+      padding-top: 5rem;
+      padding-bottom: 5rem;
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -217,7 +356,8 @@
   .animate-slide-up,
   .animate-slide-out-right,
   .animate-bounce-gentle,
-  .animate-fade-in {
+  .animate-fade-in,
+  .animate-announcement-in {
     animation: none;
   }
 }

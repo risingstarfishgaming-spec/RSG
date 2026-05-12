@@ -2,6 +2,7 @@ import { Suspense, lazy } from 'react'
 import { Toaster } from 'react-hot-toast'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { Loader2 } from 'lucide-react'
+import { RequireAuth } from './components/auth/RequireAuth'
 import { isSuperStaffHost } from './utils/staffPortal'
 
 const SiteLayout = lazy(() => import('./components/layout/SiteLayout'))
@@ -27,11 +28,11 @@ const TermsOfService = lazy(() => import('./pages/TermsOfService'))
 function PageLoader() {
   return (
     <div
-      className="flex min-h-dvh items-center justify-center bg-[#0a0a0b]"
+      className="flex min-h-dvh items-center justify-center bg-[#0B1020]"
       role="status"
       aria-label="Loading"
     >
-      <Loader2 className="h-8 w-8 animate-spin text-[#FFD700]" />
+      <Loader2 className="h-8 w-8 animate-spin text-[#FFD54A]" />
     </div>
   )
 }
@@ -44,7 +45,44 @@ export default function App() {
         containerStyle={{
           top: 'calc(10px + env(safe-area-inset-top, 0px))',
         }}
-        toastOptions={{ duration: 3500 }}
+        toastOptions={{
+          duration: 3500,
+          style: {
+            background: '#151D31',
+            color: '#F5F7FA',
+            border: '1px solid #25304A',
+            borderRadius: '12px',
+            padding: '10px 14px',
+            fontSize: '14px',
+            boxShadow:
+              '0 10px 30px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 213, 74, 0.04)',
+          },
+          success: {
+            iconTheme: { primary: '#FFD54A', secondary: '#0B1020' },
+            style: {
+              background: '#151D31',
+              color: '#F5F7FA',
+              border: '1px solid rgba(255, 213, 74, 0.35)',
+              boxShadow: '0 10px 30px rgba(0, 0, 0, 0.45), 0 0 24px rgba(255, 213, 74, 0.12)',
+            },
+          },
+          error: {
+            iconTheme: { primary: '#F87171', secondary: '#0B1020' },
+            style: {
+              background: '#151D31',
+              color: '#F5F7FA',
+              border: '1px solid rgba(248, 113, 113, 0.35)',
+            },
+          },
+          loading: {
+            iconTheme: { primary: '#2EC5FF', secondary: '#0B1020' },
+            style: {
+              background: '#151D31',
+              color: '#F5F7FA',
+              border: '1px solid rgba(46, 197, 255, 0.35)',
+            },
+          },
+        }}
       />
       <Suspense fallback={<PageLoader />}>
         {isSuperStaffHost() ? (
@@ -66,8 +104,22 @@ export default function App() {
               <Route path="forgot-password" element={<ForgotPassword />} />
               <Route path="reset-password" element={<ResetPassword />} />
               <Route path="verify-email" element={<VerifyEmail />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="settings" element={<Settings />} />
+              <Route
+                path="profile"
+                element={
+                  <RequireAuth>
+                    <Profile />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="settings"
+                element={
+                  <RequireAuth>
+                    <Settings />
+                  </RequireAuth>
+                }
+              />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

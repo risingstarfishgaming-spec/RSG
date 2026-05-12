@@ -8,6 +8,20 @@ function brevoConfigured(): boolean {
   return Boolean(env.brevoApiKey)
 }
 
+/**
+ * Always provide a Reply-To so replies don't black-hole to a no-reply mailbox.
+ * Prefers BREVO_REPLY_TO (e.g. support@…); falls back to BREVO_FROM_EMAIL so
+ * production deployments without an explicit reply-to still get one.
+ */
+function defaultReplyTo(): { email: string; name?: string } | undefined {
+  const explicit = env.brevoReplyTo
+  if (explicit) return { email: explicit }
+  if (env.brevoFromEmail && env.brevoFromEmail !== 'noreply@localhost') {
+    return { email: env.brevoFromEmail, name: env.brevoFromName }
+  }
+  return undefined
+}
+
 /** Brevo returns { message, code } or nested errors — surface them in logs. */
 function formatBrevoError(err: unknown): string {
   if (!axios.isAxiosError(err)) {
@@ -30,7 +44,7 @@ function formatBrevoError(err: unknown): string {
 type BrevoPayload = {
   sender: { name: string; email: string }
   to: { email: string; name: string }[]
-  replyTo?: { email: string }
+  replyTo?: { email: string; name?: string }
   subject: string
   htmlContent: string
 }
@@ -38,6 +52,11 @@ type BrevoPayload = {
 async function postTransactionalEmail(payload: BrevoPayload): Promise<void> {
   if (!brevoConfigured()) {
     logger.warn('BREVO_API_KEY missing — email not sent via Brevo')
+    if (env.nodeEnv === 'production') {
+      throw new Error(
+        'Email service is not configured. Please contact support.',
+      )
+    }
     return
   }
 
@@ -79,6 +98,11 @@ export async function sendVerificationEmail(params: {
   }
 
   if (!brevoConfigured()) {
+    if (env.nodeEnv === 'production') {
+      throw new Error(
+        'Email service is not configured. Please contact support.',
+      )
+    }
     logger.warn('BREVO_API_KEY missing — logging verification code instead')
     logger.info(`Verification code for ${toEmail}: ${verificationCode}`)
     logger.info(`Open: ${verifyPageUrl}`)
@@ -108,9 +132,8 @@ export async function sendVerificationEmail(params: {
     subject: 'Your RSFGaming verification code',
     htmlContent: html,
   }
-  if (env.brevoReplyTo) {
-    payload.replyTo = { email: env.brevoReplyTo }
-  }
+  const replyTo = defaultReplyTo()
+  if (replyTo) payload.replyTo = replyTo
 
   await postTransactionalEmail(payload)
 }
@@ -142,9 +165,8 @@ export async function sendLoanTransactionalEmail(params: {
     subject,
     htmlContent: html,
   }
-  if (env.brevoReplyTo) {
-    payload.replyTo = { email: env.brevoReplyTo }
-  }
+  const replyTo = defaultReplyTo()
+  if (replyTo) payload.replyTo = replyTo
 
   try {
     await postTransactionalEmail(payload)
@@ -170,6 +192,11 @@ export async function sendPasswordResetEmail(params: {
   }
 
   if (!brevoConfigured()) {
+    if (env.nodeEnv === 'production') {
+      throw new Error(
+        'Email service is not configured. Please contact support.',
+      )
+    }
     logger.warn('BREVO_API_KEY missing — logging password reset code instead')
     logger.info(`Password reset code for ${toEmail}: ${resetCode}`)
     logger.info(`Open: ${resetPageUrl}`)
@@ -199,9 +226,8 @@ export async function sendPasswordResetEmail(params: {
     subject: 'Your RSFGaming password reset code',
     htmlContent: html,
   }
-  if (env.brevoReplyTo) {
-    payload.replyTo = { email: env.brevoReplyTo }
-  }
+  const replyTo = defaultReplyTo()
+  if (replyTo) payload.replyTo = replyTo
 
   await postTransactionalEmail(payload)
 }

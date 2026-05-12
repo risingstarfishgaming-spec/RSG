@@ -15,7 +15,7 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const btnPrimary =
-  'flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD700] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,215,0,0.2)] transition hover:bg-[#f5cc00] active:bg-[#e6bd00] disabled:cursor-not-allowed disabled:opacity-50'
+  'btn-glow flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD54A] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,213,74,0.2)] transition hover:bg-[#F5C73A] active:bg-[#E5B72F] disabled:cursor-not-allowed disabled:opacity-50'
 
 export default function ForgotPassword() {
   const navigate = useNavigate()
@@ -37,14 +37,14 @@ export default function ForgotPassword() {
     try {
       await requestPasswordReset(email)
       setDoneMessage(
-        'Code sent. Redirecting you to enter the code and your new password…',
+        'If an account exists for this email, a 6-digit code is on its way. Redirecting to enter it…',
       )
       setTimeout(() => {
         navigate(
           `/reset-password?email=${encodeURIComponent(email.trim().toLowerCase())}`,
           { replace: true },
         )
-      }, 800)
+      }, 1200)
     } catch (e) {
       setFormError(e instanceof Error ? e.message : 'Request failed')
     }
@@ -53,7 +53,7 @@ export default function ForgotPassword() {
   return (
     <AuthScreenShell
       title="Forgot password"
-      subtitle="Enter the email for your account. If it exists, we will send a 6-digit code to reset your password."
+      subtitle="Enter the email for your account and we will send a 6-digit code so you can reset your password."
       backTo="/login"
     >
       <AuthFormCard>
@@ -82,6 +82,7 @@ export default function ForgotPassword() {
             autoComplete="email"
             enterKeyHint="done"
             placeholder="you@example.com"
+            autoFocus
             error={errors.email?.message}
             {...register('email')}
           />
@@ -99,9 +100,9 @@ export default function ForgotPassword() {
           Remember your password?{' '}
           <Link
             to="/login"
-            className="font-semibold text-[#FFD700] underline-offset-2 hover:underline"
+            className="font-semibold text-[#FFD54A] underline-offset-2 hover:underline"
           >
-            Sign in here
+            Sign in
           </Link>
         </p>
       </AuthFormCard>

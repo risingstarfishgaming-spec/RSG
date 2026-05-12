@@ -4,7 +4,7 @@ type WaveProps = { className?: string }
 export function WaveToDark({ className }: WaveProps) {
   return (
     <div
-      className={`relative -mt-px w-full text-[#0a0a0b] ${className ?? 'h-10 sm:h-14'}`}
+      className={`relative -mt-px w-full text-[#0B1020] ${className ?? 'h-10 sm:h-14'}`}
       aria-hidden
     >
       <svg

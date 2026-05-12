@@ -571,7 +571,7 @@ export function UserChatWidget({ variant = 'fab' }: Props) {
             : 'translate-y-0 scale-100 opacity-100'
         }`}
       >
-        <div className="flex flex-shrink-0 items-center justify-between gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 px-4 py-3 text-white">
+        <div className="flex flex-shrink-0 items-center justify-between gap-2 border-b border-[#25304A] bg-gradient-to-r from-[#151D31] via-[#1B2540] to-[#151D31] px-4 py-3 text-white">
           <div className="flex min-w-0 flex-1 items-center gap-2">
             {isPage ? (
               <Link
@@ -583,7 +583,7 @@ export function UserChatWidget({ variant = 'fab' }: Props) {
               </Link>
             ) : null}
             <div className="min-w-0">
-              <p className="text-sm font-medium opacity-80">Support Chat</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#FFD54A]">Support Chat</p>
               <p className="truncate text-lg font-semibold">RSG Live Support</p>
             </div>
           </div>
@@ -1135,7 +1135,7 @@ export function UserChatWidget({ variant = 'fab' }: Props) {
               onPaste={handlePaste}
               rows={3}
               maxLength={2000}
-              className="w-full resize-none rounded-xl border border-gray-200 px-3 py-3 text-base focus:border-transparent focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="w-full resize-none rounded-xl border border-gray-200 bg-white px-3 py-3 text-base text-gray-900 placeholder:text-gray-400 focus:border-transparent focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               placeholder="Type your message..."
             />
             {inputValue.length > 1500 && (
@@ -1235,7 +1235,7 @@ export function UserChatWidget({ variant = 'fab' }: Props) {
       <button
         type="button"
         onClick={handleToggle}
-        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 to-blue-600 text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+        className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-[#151D31] via-[#1B2540] to-[#151D31] text-[#FFD54A] shadow-[0_8px_24px_rgba(0,0,0,0.45),0_0_24px_rgba(255,213,74,0.18)] ring-1 ring-[#FFD54A]/30 transition-transform hover:scale-105 hover:ring-[#FFD54A]/55 active:scale-95"
       >
         {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
         {!isOpen && unreadCount > 0 && (

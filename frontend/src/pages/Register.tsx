@@ -6,43 +6,47 @@ import { z } from 'zod'
 import { AuthFormCard } from '../components/auth/AuthFormCard'
 import { AuthPasswordField, AuthTextField } from '../components/auth/AuthFields'
 import { AuthScreenShell } from '../components/auth/AuthScreenShell'
+import { PasswordStrengthMeter } from '../components/auth/PasswordStrength'
 import { registerAccount } from '../services/authApi'
 
-const registerSchema = z
-  .object({
-    firstName: z.string().trim().min(1, 'First name is required').max(80),
-    lastName: z.string().trim().min(1, 'Last name is required').max(80),
-    email: z.string().trim().email('Enter a valid email').max(255),
-    phoneNumber: z
-      .string()
-      .trim()
-      .min(1, 'Phone number is required')
-      .transform((s) => s.replace(/\D/g, ''))
-      .refine(
-        (digits) => digits.length >= 10 && digits.length <= 15,
-        'Enter a valid phone number (10–15 digits)',
-      ),
-    password: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .max(128),
-    confirmPassword: z.string(),
-    referralCode: z
-      .string()
-      .max(20, 'Referral code is too long')
-      .transform((s) => {
-        const t = s.trim().replace(/\s/g, '')
-        if (!t) return undefined
-        return t.toUpperCase()
-      }),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ['confirmPassword'],
-  })
+const registerSchema = z.object({
+  firstName: z.string().trim().min(1, 'First name is required').max(80),
+  lastName: z.string().trim().min(1, 'Last name is required').max(80),
+  email: z.string().trim().email('Enter a valid email').max(255),
+  phoneNumber: z
+    .string()
+    .max(32, 'Phone number is too long')
+    .optional()
+    .transform((s) => {
+      if (!s) return undefined
+      return s.trim().replace(/\D/g, '')
+    })
+    .refine(
+      (digits) =>
+        digits === undefined ||
+        digits === '' ||
+        (digits.length >= 10 && digits.length <= 15),
+      'Enter a valid phone number (10–15 digits) or leave it blank',
+    )
+    .transform((digits) => (digits ? digits : undefined)),
+  password: z
+    .string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(128),
+  referralCode: z
+    .string()
+    .max(20, 'Referral code is too long')
+    .optional()
+    .transform((s) => {
+      if (!s) return undefined
+      const t = s.trim().replace(/\s/g, '')
+      if (!t) return undefined
+      return t.toUpperCase()
+    }),
+})
 
 const btnPrimary =
-  'flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD700] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,215,0,0.2)] transition hover:bg-[#f5cc00] active:bg-[#e6bd00] disabled:cursor-not-allowed disabled:opacity-50'
+  'btn-glow flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD54A] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,213,74,0.2)] transition hover:bg-[#F5C73A] active:bg-[#E5B72F] disabled:cursor-not-allowed disabled:opacity-50'
 
 export default function Register() {
   const navigate = useNavigate()
@@ -52,6 +56,7 @@ export default function Register() {
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(registerSchema),
@@ -61,10 +66,11 @@ export default function Register() {
       email: '',
       phoneNumber: '',
       password: '',
-      confirmPassword: '',
       referralCode: '',
     },
   })
+
+  const passwordValue = watch('password') ?? ''
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null)
@@ -73,11 +79,9 @@ export default function Register() {
       firstName: values.firstName,
       lastName: values.lastName,
       email: values.email,
-      phoneNumber: values.phoneNumber,
       password: values.password,
-      ...(values.referralCode
-        ? { referralCode: values.referralCode }
-        : {}),
+      ...(values.phoneNumber ? { phoneNumber: values.phoneNumber } : {}),
+      ...(values.referralCode ? { referralCode: values.referralCode } : {}),
     }
     try {
       const res = await registerAccount(payload)
@@ -86,7 +90,10 @@ export default function Register() {
         () =>
           navigate(
             `/verify-email?email=${encodeURIComponent(res.user.email)}`,
-            { replace: true },
+            {
+              replace: true,
+              state: { emailSent: res.emailSent },
+            },
           ),
         900,
       )
@@ -116,7 +123,7 @@ export default function Register() {
               className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-3 text-sm leading-snug text-emerald-200"
               role="status"
             >
-              {successMessage} Redirecting to sign in…
+              {successMessage} Taking you to email verification…
             </p>
           ) : null}
 
@@ -126,6 +133,7 @@ export default function Register() {
               leftIcon="user"
               autoComplete="given-name"
               enterKeyHint="next"
+              autoFocus
               error={errors.firstName?.message}
               {...register('firstName')}
             />
@@ -151,7 +159,12 @@ export default function Register() {
           />
 
           <AuthTextField
-            label="Phone number"
+            label={
+              <>
+                Phone number{' '}
+                <span className="font-normal text-neutral-600">(optional)</span>
+              </>
+            }
             leftIcon="phone"
             type="tel"
             autoComplete="tel"
@@ -161,24 +174,21 @@ export default function Register() {
             error={errors.phoneNumber?.message}
             {...register('phoneNumber')}
           />
+          <p className="-mt-3 text-xs leading-relaxed text-neutral-500">
+            You can add this later. We use it to speed up payouts and support.
+          </p>
 
-          <AuthPasswordField
-            label="Password"
-            registration={register('password')}
-            autoComplete="new-password"
-            enterKeyHint="next"
-            placeholder="At least 8 characters"
-            error={errors.password?.message}
-          />
-
-          <AuthPasswordField
-            label="Confirm password"
-            registration={register('confirmPassword')}
-            autoComplete="new-password"
-            enterKeyHint="next"
-            placeholder="Repeat password"
-            error={errors.confirmPassword?.message}
-          />
+          <div>
+            <AuthPasswordField
+              label="Password"
+              registration={register('password')}
+              autoComplete="new-password"
+              enterKeyHint="done"
+              placeholder="At least 8 characters"
+              error={errors.password?.message}
+            />
+            <PasswordStrengthMeter password={passwordValue} />
+          </div>
 
           <AuthTextField
             label={
@@ -200,14 +210,14 @@ export default function Register() {
             By creating an account you agree to our{' '}
             <Link
               to="/terms"
-              className="font-medium text-[#FFD700] underline-offset-2 hover:underline"
+              className="font-medium text-[#FFD54A] underline-offset-2 hover:underline"
             >
               Terms of Service
             </Link>{' '}
             and{' '}
             <Link
               to="/privacy"
-              className="font-medium text-[#FFD700] underline-offset-2 hover:underline"
+              className="font-medium text-[#FFD54A] underline-offset-2 hover:underline"
             >
               Privacy Policy
             </Link>
@@ -227,7 +237,7 @@ export default function Register() {
           Already have an account?{' '}
           <Link
             to="/login"
-            className="font-semibold text-[#FFD700] underline-offset-2 hover:underline"
+            className="font-semibold text-[#FFD54A] underline-offset-2 hover:underline"
           >
             Sign in here
           </Link>

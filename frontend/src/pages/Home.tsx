@@ -3,6 +3,8 @@ import { StarAccent } from '../components/page/StarAccent'
 import { WaveToDark } from '../components/page/WaveToDark'
 import { homePlatformsPlaceholder } from '../data/homePlatforms'
 import { FacebookReviewsCarousel } from '../components/page/FacebookReviewsCarousel'
+import { TrustBar } from '../components/page/TrustBar'
+import { AnnouncementBar } from '../components/layout/AnnouncementBar'
 
 /** Creative hero-only atmosphere: aurora, depth blobs, underwater caustics, fish & stars. Mobile = lighter layers. */
 function HeroBackground() {
@@ -76,7 +78,7 @@ function HeroBackground() {
       </svg>
 
       {/* Twinkling stars — fewer on narrow viewports via hidden sm:block */}
-      <div className="absolute inset-0 text-[#FFD700]">
+      <div className="absolute inset-0 text-[#FFD54A]">
         <StarAccent className="animate-hero-twinkle absolute left-[12%] top-[18%] h-2 w-2 opacity-60 sm:left-[10%] sm:top-[15%] sm:h-2.5 sm:w-2.5" />
         <StarAccent className="animate-hero-twinkle-delay absolute left-[78%] top-[22%] h-1.5 w-1.5 sm:left-[82%] sm:top-[18%] sm:h-2 sm:w-2" />
         <StarAccent className="animate-hero-twinkle-slow absolute bottom-[38%] left-[8%] h-2 w-2 sm:bottom-[35%]" />
@@ -106,16 +108,16 @@ export default function Home() {
   const platforms = homePlatformsPlaceholder
 
   return (
-    <main className="bg-[#0a0a0b]">
+    <main className="bg-[#0B1020]">
       {/* —— Hero —— */}
       <section className="relative min-h-[min(88dvh,820px)] overflow-hidden sm:min-h-[min(92dvh,880px)]">
         <HeroBackground />
 
         <div className="relative z-10 mx-auto flex min-h-[min(88dvh,820px)] max-w-6xl flex-col items-center justify-center px-4 pb-28 pt-20 text-center sm:min-h-[min(92dvh,880px)] sm:px-6 sm:pb-32 sm:pt-28">
           <div className="animate-home-shimmer mb-5 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-white/95 shadow-lg shadow-black/20 backdrop-blur-md">
-            <StarAccent className="h-3.5 w-3.5 text-[#FFD700]" />
+            <StarAccent className="h-3.5 w-3.5 text-[#FFD54A]" />
             RSFGaming
-            <StarAccent className="h-3.5 w-3.5 text-[#FFD700]" />
+            <StarAccent className="h-3.5 w-3.5 text-[#FFD54A]" />
           </div>
 
           <h1 className="font-display max-w-4xl text-[clamp(2.5rem,8vw,4.75rem)] font-normal leading-[1.05] tracking-tight">
@@ -124,15 +126,14 @@ export default function Home() {
             </span>
           </h1>
 
-          <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-white/80 sm:text-base">
-            Platforms, bonuses, and live support—times in{' '}
-            <span className="font-semibold text-white">CST</span>.
-          </p>
+          <div className="mt-6 w-full max-w-2xl px-2 sm:mt-7">
+            <AnnouncementBar variant="hero" />
+          </div>
 
-          <div className="mt-9 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
+          <div className="mt-8 flex flex-col items-stretch gap-3 sm:mt-10 sm:flex-row sm:items-center sm:justify-center sm:gap-4">
             <Link
               to="/platforms"
-              className="inline-flex items-center justify-center rounded-full bg-[#FFD700] px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-neutral-950 shadow-[0_8px_32px_rgba(255,215,0,0.35)] transition hover:bg-[#ffe44d] hover:shadow-[0_12px_40px_rgba(255,215,0,0.45)]"
+              className="btn-glow inline-flex items-center justify-center rounded-full bg-[#FFD54A] px-8 py-3.5 text-sm font-bold uppercase tracking-wide text-neutral-950 shadow-[0_8px_32px_rgba(255,213,74,0.35)] transition hover:bg-[#FFE17A] hover:shadow-[0_12px_40px_rgba(255,213,74,0.45)]"
             >
               Platforms
             </Link>
@@ -162,7 +163,7 @@ export default function Home() {
       {/* —— Platforms —— */}
       <section
         id="platforms"
-        className="scroll-mt-20 px-4 py-14 sm:px-6 sm:py-20"
+        className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-24"
       >
         <div className="mx-auto max-w-6xl">
           <div className="mx-auto max-w-xl text-center">
@@ -180,11 +181,11 @@ export default function Home() {
                 {[0, 1, 2].map((i) => (
                   <div
                     key={i}
-                    className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-transparent p-6 transition hover:border-[#FFD700]/30"
+                    className="group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.07] to-transparent p-6 transition hover:border-[#FFD54A]/30"
                   >
-                    <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#FFD700]/10 blur-2xl transition group-hover:bg-[#FFD700]/20" />
+                    <div className="absolute -right-8 -top-8 h-24 w-24 rounded-full bg-[#FFD54A]/10 blur-2xl transition group-hover:bg-[#FFD54A]/20" />
                     <div className="relative">
-                      <div className="h-2 w-12 rounded-full bg-[#FFD700]/40" />
+                      <div className="h-2 w-12 rounded-full bg-[#FFD54A]/40" />
                       <div className="mt-4 h-4 w-3/4 max-w-[200px] rounded bg-white/10" />
                       <div className="mt-3 h-3 w-full rounded bg-white/[0.06]" />
                       <div className="mt-2 h-3 w-5/6 rounded bg-white/[0.04]" />
@@ -201,7 +202,7 @@ export default function Home() {
                 </p>
                 <Link
                   to="/platforms"
-                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#FFD700] transition hover:gap-3"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#FFD54A] transition hover:gap-3"
                 >
                   All platforms
                   <span aria-hidden>→</span>
@@ -212,8 +213,8 @@ export default function Home() {
             <ul className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {platforms.map((p) => (
                 <li key={p.id}>
-                  <article className="group h-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-transparent p-6 transition hover:-translate-y-0.5 hover:border-[#FFD700]/35 hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-                    <StarAccent className="h-5 w-5 text-[#FFD700]/80 transition group-hover:text-[#FFD700]" />
+                  <article className="group h-full rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-transparent p-6 transition hover:-translate-y-0.5 hover:border-[#FFD54A]/35 hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+                    <StarAccent className="h-5 w-5 text-[#FFD54A]/80 transition group-hover:text-[#FFD54A]" />
                     <h3 className="mt-4 text-lg font-semibold text-white">
                       {p.name}
                     </h3>
@@ -230,6 +231,11 @@ export default function Home() {
         </div>
       </section>
 
+      {/* —— Trust —— */}
+      <div className="py-14 sm:py-20">
+        <TrustBar />
+      </div>
+
       {/* —— Hours —— */}
       <section className="border-y border-white/[0.06] bg-[#080809] px-4 py-14 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-3xl text-center">
@@ -238,7 +244,7 @@ export default function Home() {
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-sm leading-relaxed text-neutral-400">
             Open around the clock except{' '}
-            <span className="font-semibold text-[#FFD700]">12:00 PM – 6:00 PM CST</span>{' '}
+            <span className="font-semibold text-[#FFD54A]">12:00 PM – 6:00 PM CST</span>{' '}
             daily. No play or support during that window.
           </p>
         </div>
@@ -248,12 +254,12 @@ export default function Home() {
 
       {/* —— Final CTA —— */}
       <section className="px-4 pb-20 pt-2 sm:px-6 sm:pb-28">
-        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-[#FFD700]/25 bg-gradient-to-r from-[#1a1408] via-[#2d1f0a] to-[#1a1408] px-8 py-12 text-center shadow-[0_0_80px_rgba(255,215,0,0.12)] sm:py-14">
+        <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-[#FFD54A]/25 bg-gradient-to-r from-[#0B1020] via-[#151D31] to-[#0B1020] px-8 py-12 text-center shadow-[0_0_80px_rgba(255,213,74,0.12)] sm:py-14">
           <div
             className="pointer-events-none absolute inset-0 opacity-30"
             aria-hidden
           >
-            <div className="absolute left-1/4 top-0 h-40 w-40 rounded-full bg-[#FFD700] blur-[100px]" />
+            <div className="absolute left-1/4 top-0 h-40 w-40 rounded-full bg-[#FFD54A] blur-[100px]" />
             <div className="absolute bottom-0 right-1/4 h-32 w-32 rounded-full bg-amber-600 blur-[80px]" />
           </div>
           <h2 className="font-display relative text-xl font-normal text-white sm:text-2xl md:text-3xl">
@@ -265,7 +271,7 @@ export default function Home() {
           <div className="relative mt-7 flex flex-wrap justify-center gap-3">
             <Link
               to="/chat"
-              className="inline-flex rounded-full bg-[#FFD700] px-7 py-3 text-sm font-bold text-neutral-950 transition hover:bg-[#ffe566]"
+              className="btn-glow inline-flex rounded-full bg-[#FFD54A] px-7 py-3 text-sm font-bold text-neutral-950 transition hover:bg-[#FFE17A]"
             >
               Chat
             </Link>

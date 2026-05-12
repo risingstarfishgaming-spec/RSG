@@ -20,15 +20,25 @@ function AvatarCircle({
   user: AuthUser
   className?: string
 }) {
+  const unverified = !user.isEmailVerified
   return (
-    <span
-      className={[
-        'flex shrink-0 items-center justify-center rounded-full border-2 border-[#FFD700]/80 bg-gradient-to-br from-neutral-700 to-neutral-900 text-xs font-bold text-[#FFD700] sm:text-sm',
-        className ?? '',
-      ].join(' ')}
-      aria-hidden
-    >
-      {userInitials(user)}
+    <span className="relative inline-flex">
+      <span
+        className={[
+          'flex shrink-0 items-center justify-center rounded-full border-2 border-[#FFD54A]/80 bg-gradient-to-br from-neutral-700 to-neutral-900 text-xs font-bold text-[#FFD54A] sm:text-sm',
+          className ?? '',
+        ].join(' ')}
+        aria-hidden
+      >
+        {userInitials(user)}
+      </span>
+      {unverified ? (
+        <span
+          className="absolute -right-0.5 -top-0.5 inline-flex h-2.5 w-2.5 items-center justify-center rounded-full border-2 border-[#0B1020] bg-amber-400 shadow-[0_0_0_1px_rgba(0,0,0,0.4)]"
+          aria-label="Email not verified"
+          role="img"
+        />
+      ) : null}
     </span>
   )
 }
@@ -69,7 +79,7 @@ export function HeaderProfileMenu({ user }: { user: AuthUser }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-2 rounded-full outline-none ring-offset-2 ring-offset-[#0a0a0b] focus-visible:ring-2 focus-visible:ring-[#FFD700]/70"
+        className="flex items-center gap-2 rounded-full outline-none ring-offset-2 ring-offset-[#0B1020] focus-visible:ring-2 focus-visible:ring-[#FFD54A]/70"
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label="Account menu"
@@ -87,7 +97,28 @@ export function HeaderProfileMenu({ user }: { user: AuthUser }) {
               {user.firstName} {user.lastName}
             </p>
             <p className="mt-0.5 truncate text-xs text-neutral-500">{user.email}</p>
+            {user.isEmailVerified ? (
+              <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[11px] font-medium text-emerald-300">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+                Email verified
+              </p>
+            ) : (
+              <p className="mt-1.5 inline-flex items-center gap-1.5 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[11px] font-medium text-amber-200">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
+                Email not verified
+              </p>
+            )}
           </div>
+          {!user.isEmailVerified ? (
+            <Link
+              to={`/verify-email?email=${encodeURIComponent(user.email)}`}
+              role="menuitem"
+              className={menuItemClass}
+              onClick={() => setOpen(false)}
+            >
+              Verify email
+            </Link>
+          ) : null}
           <Link
             to="/profile"
             role="menuitem"
@@ -141,9 +172,29 @@ export function DrawerProfileSection({
             {user.firstName} {user.lastName}
           </p>
           <p className="truncate text-xs text-neutral-500">{user.email}</p>
+          {user.isEmailVerified ? (
+            <p className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-emerald-500/15 px-1.5 py-0.5 text-[11px] font-medium text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden />
+              Email verified
+            </p>
+          ) : (
+            <p className="mt-1 inline-flex items-center gap-1.5 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[11px] font-medium text-amber-200">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden />
+              Email not verified
+            </p>
+          )}
         </div>
       </div>
       <div className="flex flex-col overflow-hidden rounded-xl border border-white/10">
+        {!user.isEmailVerified ? (
+          <Link
+            to={`/verify-email?email=${encodeURIComponent(user.email)}`}
+            className="border-b border-white/10 px-4 py-3 text-sm font-semibold text-amber-200 transition hover:bg-amber-500/10"
+            onClick={onClose}
+          >
+            Verify email
+          </Link>
+        ) : null}
         <Link
           to="/profile"
           className="border-b border-white/10 px-4 py-3 text-sm font-medium text-neutral-200 transition hover:bg-white/5"

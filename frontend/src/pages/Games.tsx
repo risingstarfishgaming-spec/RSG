@@ -12,7 +12,7 @@ const games = [
 
 export default function Games() {
   return (
-    <main className="overflow-x-hidden bg-[#0a0a0b]">
+    <main className="overflow-x-hidden bg-[#0B1020]">
       <PageHero
         eyebrow="Titles"
         title="Popular games"
@@ -28,9 +28,9 @@ export default function Games() {
           ].map((x) => (
             <div
               key={x.t}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-5 text-center sm:text-left"
+              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-5 text-center transition hover:border-white/[0.12] hover:bg-white/[0.04] sm:text-left"
             >
-              <p className="text-xs font-bold uppercase tracking-widest text-[#FFD700]/90">
+              <p className="text-xs font-bold uppercase tracking-widest text-[#FFD54A]/90">
                 {x.t}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-neutral-400">{x.d}</p>
@@ -39,7 +39,7 @@ export default function Games() {
         </div>
       </section>
 
-      <section className="px-4 py-14 sm:px-6 sm:py-20">
+      <section className="px-4 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-sm text-neutral-500">
             Join thousands of players enjoying our most popular titles.
@@ -47,8 +47,8 @@ export default function Games() {
           <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {games.map((g) => (
               <li key={g.title}>
-                <article className="group rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-transparent p-6 text-center transition hover:-translate-y-0.5 hover:border-[#FFD700]/35 hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-                  <span className="text-xs font-bold uppercase tracking-wide text-[#FFD700]/90">
+                <article className="group rounded-2xl border border-white/[0.08] bg-gradient-to-b from-white/[0.06] to-transparent p-6 text-center transition hover:-translate-y-0.5 hover:border-[#FFD54A]/35 hover:shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+                  <span className="text-xs font-bold uppercase tracking-wide text-[#FFD54A]/90">
                     {g.tag}
                   </span>
                   <p className="mt-4 text-lg font-semibold text-white">{g.title}</p>

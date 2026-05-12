@@ -4,7 +4,7 @@ import { PageHero } from '../components/page/PageHero'
 
 export default function NotFound() {
   return (
-    <main className="bg-[#0a0a0b]">
+    <main className="bg-[#0B1020]">
       <PageHero
         showBadge={false}
         eyebrow="Lost at sea"
@@ -28,7 +28,7 @@ export default function NotFound() {
       <section className="px-4 py-12 text-center sm:px-6 sm:py-16">
         <Link
           to="/"
-          className="inline-flex rounded-full border border-[#FFD700]/40 bg-[#FFD700]/10 px-8 py-3 text-sm font-semibold text-[#FFD700] transition hover:bg-[#FFD700]/20"
+          className="inline-flex rounded-full border border-[#FFD54A]/40 bg-[#FFD54A]/10 px-8 py-3 text-sm font-semibold text-[#FFD54A] transition hover:bg-[#FFD54A]/20"
         >
           Back to home
         </Link>

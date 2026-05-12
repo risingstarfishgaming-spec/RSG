@@ -46,7 +46,7 @@ export function AuthScreenShell({
           <button
             type="button"
             onClick={goBack}
-            className="flex h-11 w-11 touch-manipulation items-center justify-center rounded-full border border-white/20 bg-black/25 text-white/95 shadow-lg shadow-black/20 backdrop-blur-md transition hover:border-[#FFD700]/40 hover:bg-[#FFD700]/15 hover:text-[#FFD700]"
+            className="flex h-11 w-11 touch-manipulation items-center justify-center rounded-full border border-white/20 bg-black/25 text-white/95 shadow-lg shadow-black/20 backdrop-blur-md transition hover:border-[#FFD54A]/40 hover:bg-[#FFD54A]/15 hover:text-[#FFD54A]"
             aria-label="Go back"
           >
             <IconArrowLeft className="h-5 w-5" />

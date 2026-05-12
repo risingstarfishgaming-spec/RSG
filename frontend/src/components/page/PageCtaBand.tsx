@@ -15,12 +15,12 @@ export function PageCtaBand({
 }: Props) {
   return (
     <section className="px-4 pb-20 pt-4 sm:px-6 sm:pb-28">
-      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-[#FFD700]/25 bg-gradient-to-r from-[#1a1408] via-[#2d1f0a] to-[#1a1408] px-6 py-12 text-center shadow-[0_0_80px_rgba(255,215,0,0.1)] sm:px-10 sm:py-14">
+      <div className="relative mx-auto max-w-4xl overflow-hidden rounded-3xl border border-[#FFD54A]/25 bg-gradient-to-r from-[#0B1020] via-[#151D31] to-[#0B1020] px-6 py-12 text-center shadow-[0_0_80px_rgba(255,213,74,0.1)] sm:px-10 sm:py-14">
         <div
           className="pointer-events-none absolute inset-0 opacity-25"
           aria-hidden
         >
-          <div className="absolute left-1/4 top-0 h-32 w-32 rounded-full bg-[#FFD700] blur-[90px]" />
+          <div className="absolute left-1/4 top-0 h-32 w-32 rounded-full bg-[#FFD54A] blur-[90px]" />
           <div className="absolute bottom-0 right-1/4 h-28 w-28 rounded-full bg-amber-600 blur-[70px]" />
         </div>
         <h2 className="font-display relative text-xl font-normal text-white sm:text-2xl md:text-3xl">
@@ -32,7 +32,7 @@ export function PageCtaBand({
         <div className="relative mt-8 flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
           <Link
             to={primary.to}
-            className="inline-flex items-center justify-center rounded-full bg-[#FFD700] px-7 py-3 text-sm font-bold text-neutral-950 transition hover:bg-[#ffe566]"
+            className="btn-glow inline-flex items-center justify-center rounded-full bg-[#FFD54A] px-7 py-3 text-sm font-bold text-neutral-950 transition hover:bg-[#FFE17A]"
           >
             {primary.label}
           </Link>

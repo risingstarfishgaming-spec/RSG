@@ -1,12 +1,14 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useLocation, useSearchParams } from 'react-router'
+import toast from 'react-hot-toast'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router'
 import { z } from 'zod'
 import { AuthFormCard } from '../components/auth/AuthFormCard'
 import { AuthTextField } from '../components/auth/AuthFields'
 import { AuthScreenShell } from '../components/auth/AuthScreenShell'
 import { resendVerificationCode, verifyEmailWithCode } from '../services/authApi'
+import { useAuthStore } from '../stores/authStore'
 
 const schema = z.object({
   email: z.string().trim().email('Enter a valid email'),
@@ -20,12 +22,16 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>
 
 const btnPrimary =
-  'flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD700] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,215,0,0.2)] transition hover:bg-[#f5cc00]'
+  'btn-glow flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD54A] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,213,74,0.2)] transition hover:bg-[#F5C73A]'
 export default function VerifyEmail() {
   const location = useLocation()
-  const fromLogin = Boolean(
-    (location.state as { fromLogin?: boolean } | null)?.fromLogin,
-  )
+  const navigate = useNavigate()
+  const setAuth = useAuthStore((s) => s.setAuth)
+  const navState = location.state as
+    | { fromLogin?: boolean; emailSent?: boolean }
+    | null
+  const fromLogin = Boolean(navState?.fromLogin)
+  const emailDeliveryFailed = navState?.emailSent === false
   const [searchParams] = useSearchParams()
   const emailFromQuery = searchParams.get('email') ?? ''
   const [formError, setFormError] = useState<string | null>(null)
@@ -103,6 +109,12 @@ export default function VerifyEmail() {
         email: data.email,
         code: data.code,
       })
+      if (res.token && res.user) {
+        setAuth(res.token, res.user)
+        toast.success('Welcome — your email is verified!')
+        navigate('/bonuses', { replace: true, state: { justVerified: true } })
+        return
+      }
       setSuccessMessage(res.message)
     } catch (e) {
       setFormError(e instanceof Error ? e.message : 'Verification failed')
@@ -113,7 +125,7 @@ export default function VerifyEmail() {
     <AuthScreenShell
       title="Verify your email"
       subtitle="We sent a 6-digit code to your inbox. Enter it below to activate your account."
-      backTo="/"
+      backTo={fromLogin ? '/login' : '/'}
     >
       <AuthFormCard>
         {successMessage ? (
@@ -132,8 +144,17 @@ export default function VerifyEmail() {
                 className="mb-4 rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 py-3 text-sm leading-snug text-amber-100"
                 role="status"
               >
-                Your email and password are correct. Enter the 6-digit code from your
-                inbox to verify your account, then return to sign in.
+                One more step before you sign in. Enter the 6-digit code from your
+                inbox and we will finish setting up your account.
+              </p>
+            ) : null}
+            {emailDeliveryFailed ? (
+              <p
+                className="mb-4 rounded-xl border border-red-500/35 bg-red-500/10 px-3 py-3 text-sm leading-snug text-red-200"
+                role="alert"
+              >
+                Your account was created, but we couldn&apos;t deliver the verification
+                email just now. Tap &quot;Resend code&quot; below in a moment.
               </p>
             ) : null}
             <form className="flex flex-col gap-5 sm:gap-4" onSubmit={onSubmit} noValidate>
@@ -153,6 +174,7 @@ export default function VerifyEmail() {
               autoComplete="email"
               enterKeyHint="next"
               placeholder="you@example.com"
+              autoFocus={!emailFromQuery}
               error={errors.email?.message}
               {...register('email')}
             />
@@ -166,6 +188,7 @@ export default function VerifyEmail() {
               enterKeyHint="done"
               maxLength={6}
               placeholder="000000"
+              autoFocus={!!emailFromQuery}
               error={errors.code?.message}
               {...register('code')}
             />
@@ -200,7 +223,7 @@ export default function VerifyEmail() {
                   isSubmitting ||
                   (resendCooldownUntil != null && resendCooldownSeconds > 0)
                 }
-                className="text-sm font-semibold text-[#FFD700] underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:no-underline"
+                className="text-sm font-semibold text-[#FFD54A] underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:no-underline"
               >
                 {isResending
                   ? 'Sending…'
@@ -218,7 +241,7 @@ export default function VerifyEmail() {
             Wrong inbox?{' '}
             <Link
               to="/support"
-              className="font-semibold text-[#FFD700] underline-offset-2 hover:underline"
+              className="font-semibold text-[#FFD54A] underline-offset-2 hover:underline"
             >
               Get help
             </Link>

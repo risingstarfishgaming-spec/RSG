@@ -40,6 +40,20 @@ function resolveFrontendOrigins(): string[] {
   return [...set]
 }
 
+/**
+ * Canonical public URL for emails (verify/reset links). Falls back to the first
+ * entry in FRONTEND_URL so multi-origin configs (e.g. "https://a.com,https://b.com")
+ * don't produce broken links. Set PUBLIC_APP_URL explicitly when origins differ
+ * from the public app URL.
+ */
+function resolvePublicAppUrl(): string {
+  const explicit = (process.env.PUBLIC_APP_URL ?? '').trim().replace(/\/$/, '')
+  if (explicit) return explicit
+  const origins = resolveFrontendOrigins()
+  if (origins.length > 0) return origins[0]
+  return 'http://localhost:5173'
+}
+
 /** Brevo + Cloudinary ping at GET /api/health/integrations */
 function resolveAllowIntegrationHealth(): boolean {
   if (process.env.ALLOW_INTEGRATION_HEALTH === 'true') return true
@@ -55,6 +69,8 @@ export const env = {
   frontendUrl: process.env.FRONTEND_URL ?? 'http://localhost:5173',
   /** Browser origins allowed for CORS (see resolveFrontendOrigins). */
   frontendOrigins: resolveFrontendOrigins(),
+  /** Canonical app URL for verify/reset email links (see resolvePublicAppUrl). */
+  publicAppUrl: resolvePublicAppUrl(),
   backendUrl: process.env.BACKEND_URL ?? 'http://localhost:5000',
   jwtSecret: required('JWT_SECRET', process.env.NODE_ENV === 'development' ? 'dev' : undefined),
   jwtExpiresIn: process.env.JWT_EXPIRES_IN ?? '7d',

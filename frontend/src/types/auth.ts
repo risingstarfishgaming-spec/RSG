@@ -3,8 +3,9 @@ export type AuthUser = {
   firstName: string
   lastName: string
   email: string
-  /** Normalized digits-only (matches API) */
+  /** Normalized digits-only (matches API). Empty string when not provided. */
   phoneNumber: string
   isEmailVerified: boolean
   referralCode: string
 }
+

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { Link, useNavigate } from 'react-router'
+import { Link, useLocation, useNavigate } from 'react-router'
 import { z } from 'zod'
 import { AuthFormCard } from '../components/auth/AuthFormCard'
 import { AuthPasswordField, AuthTextField } from '../components/auth/AuthFields'
@@ -20,13 +20,17 @@ const REMEMBER_KEY = 'rsfg_remember'
 const EMAIL_KEY = 'rsfg_saved_email'
 
 const btnPrimary =
-  'flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD700] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,215,0,0.2)] transition hover:bg-[#f5cc00] active:bg-[#e6bd00] disabled:cursor-not-allowed disabled:opacity-50'
+  'btn-glow flex min-h-12 w-full touch-manipulation items-center justify-center rounded-2xl bg-[#FFD54A] px-4 py-3.5 text-base font-bold text-neutral-950 shadow-[0_8px_28px_rgba(255,213,74,0.2)] transition hover:bg-[#F5C73A] active:bg-[#E5B72F] disabled:cursor-not-allowed disabled:opacity-50'
 
 export default function Login() {
   const navigate = useNavigate()
+  const location = useLocation()
   const setAuth = useAuthStore((s) => s.setAuth)
   const [formError, setFormError] = useState<string | null>(null)
   const [remember, setRemember] = useState(false)
+
+  const redirectTo =
+    (location.state as { from?: string } | null)?.from ?? '/bonuses'
 
   const {
     register,
@@ -66,7 +70,7 @@ export default function Login() {
       } catch {
         /* ignore */
       }
-      navigate('/bonuses', { replace: true })
+      navigate(redirectTo, { replace: true })
     } catch (e) {
       if (
         e instanceof LoginError &&
@@ -78,25 +82,43 @@ export default function Login() {
         )
         return
       }
+      if (e instanceof LoginError && e.httpStatus === 429) {
+        setFormError(
+          'Too many sign-in attempts. Wait a few minutes, or reset your password if you forgot it.',
+        )
+        return
+      }
       setFormError(e instanceof Error ? e.message : 'Sign in failed')
     }
   })
 
+  const rateLimited = formError?.startsWith('Too many sign-in attempts')
+
   return (
     <AuthScreenShell
-      title="Log in"
-      subtitle="Enter your email and password to access your account and manage your services."
+      title="Sign in"
+      subtitle="Welcome back. Sign in to claim bonuses, chat with support, and manage your account."
       backTo="/"
     >
       <AuthFormCard>
         <form className="flex flex-col gap-5 sm:gap-4" onSubmit={onSubmit} noValidate>
           {formError ? (
-            <p
+            <div
               className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-3 text-sm leading-snug text-red-300"
               role="alert"
             >
-              {formError}
-            </p>
+              <p>{formError}</p>
+              {rateLimited ? (
+                <p className="mt-2">
+                  <Link
+                    to="/forgot-password"
+                    className="font-semibold text-red-100 underline-offset-2 hover:underline"
+                  >
+                    Reset your password
+                  </Link>
+                </p>
+              ) : null}
+            </div>
           ) : null}
 
           <AuthTextField
@@ -106,6 +128,7 @@ export default function Login() {
             autoComplete="email"
             enterKeyHint="next"
             placeholder="you@example.com"
+            autoFocus
             error={errors.email?.message}
             {...register('email')}
           />
@@ -125,20 +148,20 @@ export default function Login() {
                 type="checkbox"
                 checked={remember}
                 onChange={(ev) => setRemember(ev.target.checked)}
-                className="h-4 w-4 shrink-0 rounded border-white/20 bg-black/50 accent-[#FFD700]"
+                className="h-4 w-4 shrink-0 rounded border-white/20 bg-black/50 accent-[#FFD54A]"
               />
-              <span className="select-none">Remember me</span>
+              <span className="select-none">Remember my email on this device</span>
             </label>
             <Link
               to="/forgot-password"
-              className="touch-manipulation font-semibold text-[#FFD700] underline-offset-2 hover:underline"
+              className="touch-manipulation font-semibold text-[#FFD54A] underline-offset-2 hover:underline"
             >
               Forgot password?
             </Link>
           </div>
 
           <button type="submit" disabled={isSubmitting} className={btnPrimary}>
-            {isSubmitting ? 'Signing in…' : 'Login'}
+            {isSubmitting ? 'Signing in…' : 'Sign in'}
           </button>
         </form>
 
@@ -146,9 +169,9 @@ export default function Login() {
           Don&apos;t have an account?{' '}
           <Link
             to="/register"
-            className="font-semibold text-[#FFD700] underline-offset-2 hover:underline"
+            className="font-semibold text-[#FFD54A] underline-offset-2 hover:underline"
           >
-            Sign up here
+            Create one
           </Link>
         </p>
       </AuthFormCard>

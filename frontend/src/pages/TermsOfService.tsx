@@ -2,11 +2,11 @@ import { Link } from 'react-router'
 import { PageHero } from '../components/page/PageHero'
 import { LEGAL_ENTITY_NAME, LEGAL_JURISDICTION } from '../content/legalEntity'
 
-const section = 'space-y-4 text-sm leading-relaxed text-neutral-300 [&_h2]:font-display [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-normal [&_h2]:text-white [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_strong]:text-white [&_a]:text-[#FFD700] [&_a]:underline-offset-2 hover:[&_a]:underline'
+const section = 'space-y-4 text-sm leading-relaxed text-neutral-300 [&_h2]:font-display [&_h2]:mt-10 [&_h2]:mb-3 [&_h2]:text-xl [&_h2]:font-normal [&_h2]:text-white [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5 [&_strong]:text-white [&_a]:text-[#FFD54A] [&_a]:underline-offset-2 hover:[&_a]:underline'
 
 export default function TermsOfService() {
   return (
-    <main className="bg-[#0a0a0b]">
+    <main className="bg-[#0B1020]">
       <PageHero
         eyebrow="Legal"
         title="Terms of Service"
@@ -28,7 +28,7 @@ export default function TermsOfService() {
           &quot;Platform&quot;), operated by <strong>{LEGAL_ENTITY_NAME}</strong> from{' '}
           <strong>{LEGAL_JURISDICTION}</strong>. Please read these Terms carefully before using our Platform.
           By accessing or using the Platform, you agree to be bound by these Terms and our{' '}
-          <Link to="/privacy" className="font-semibold text-[#FFD700] underline-offset-2 hover:underline">
+          <Link to="/privacy" className="font-semibold text-[#FFD54A] underline-offset-2 hover:underline">
             Privacy Policy
           </Link>
           . If you do not agree to these Terms, you may not access or use the Platform.
@@ -183,7 +183,7 @@ export default function TermsOfService() {
             <strong className="text-white">Brand:</strong> Rising Star Fish Gaming
           </li>
           <li className="mt-2">
-            <Link to="/support" className="font-semibold text-[#FFD700] underline-offset-2 hover:underline">
+            <Link to="/support" className="font-semibold text-[#FFD54A] underline-offset-2 hover:underline">
               Contact us through Support
             </Link>
           </li>

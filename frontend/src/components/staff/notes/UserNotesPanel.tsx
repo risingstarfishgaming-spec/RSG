@@ -150,7 +150,7 @@ export default function UserNotesPanel({
             onChange={(e) => setNewNote(e.target.value)}
             rows={3}
             placeholder="Add a note…"
-            className="w-full resize-none rounded-lg border border-gray-200 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             maxLength={8000}
           />
           <button
