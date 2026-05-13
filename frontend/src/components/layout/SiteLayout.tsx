@@ -388,12 +388,8 @@ export default function SiteLayout() {
 
       <div
         ref={mainScrollRef}
-        className={`flex min-h-0 flex-1 flex-col overflow-x-hidden md:pb-0 ${
+        className={`flex min-h-0 flex-1 flex-col overflow-x-hidden pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] md:pb-0 ${
           isChatPage ? 'overflow-hidden' : 'overflow-y-auto overscroll-y-contain'
-        } ${
-          isChatPage
-            ? ''
-            : 'pb-[calc(4.25rem+env(safe-area-inset-bottom,0px))] md:pb-0'
         }`}
       >
         {showVerifyBanner && user ? <UnverifiedEmailBanner user={user} /> : null}
