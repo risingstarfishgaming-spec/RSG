@@ -3,7 +3,6 @@ import { Link } from 'react-router'
 import { Loader2, Mail, Send, Upload, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { StaffCard } from '../../components/staff/ui/StaffCard'
-import { StaffPageHeader } from '../../components/staff/ui/StaffPageHeader'
 import {
   staffInputClass,
   staffLabelClass,
@@ -301,10 +300,7 @@ export function AdminEmailPromotionsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <StaffPageHeader
-          description="Send branded promotional emails to members. Uses the same recipient options as Ace: all, selected, or by CRM label — delivered to email addresses via Brevo."
-        />
+      <div className="flex flex-wrap items-center justify-end gap-3">
         <button
           type="button"
           onClick={() => setShowPreview((v) => !v)}
@@ -490,6 +486,45 @@ export function AdminEmailPromotionsPage() {
                       All members ({contactsLoading ? '…' : contactsTotal})
                     </span>
                   </label>
+                  {recipientOption === 'all' && (
+                    <div className="ml-7 mt-2 space-y-2">
+                      <input
+                        type="search"
+                        value={contactSearch}
+                        onChange={(e) => setContactSearch(e.target.value)}
+                        placeholder="Filter list to verify recipients…"
+                        className={staffInputClass.replace('mt-1', 'mt-0')}
+                      />
+                      <div className="max-h-64 overflow-y-auto rounded-lg border-2 border-slate-200 bg-slate-50 p-2">
+                        {contactsLoading ? (
+                          <p className="px-2 py-3 text-center text-xs text-slate-500">
+                            Loading members…
+                          </p>
+                        ) : filteredContacts.length === 0 ? (
+                          <p className="px-2 py-3 text-center text-xs text-slate-500">
+                            No matching members.
+                          </p>
+                        ) : (
+                          filteredContacts.map((c) => (
+                            <div
+                              key={c.id}
+                              className="flex items-center justify-between gap-2 truncate rounded px-2 py-1 text-xs text-slate-700"
+                            >
+                              <span className="truncate font-mono">{c.email}</span>
+                              <span className="shrink-0 text-[10px] uppercase tracking-wide text-slate-400">
+                                {c.firstName} {c.lastName}
+                              </span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        {contactsTotal > contacts.length
+                          ? `Preview shows first ${contacts.length} of ${contactsTotal}. All ${contactsTotal} members will receive the email.`
+                          : `${contactsTotal} member${contactsTotal === 1 ? '' : 's'} will receive the email.`}
+                      </p>
+                    </div>
+                  )}
 
                   <label className="flex cursor-pointer items-center gap-3">
                     <input
@@ -510,29 +545,72 @@ export function AdminEmailPromotionsPage() {
                         placeholder="Search name or email…"
                         className={staffInputClass.replace('mt-1', 'mt-0')}
                       />
-                      <div className="max-h-40 overflow-y-auto rounded-lg border-2 border-slate-200 p-3">
-                        {filteredContacts.map((c) => (
-                          <label
-                            key={c.id}
-                            className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-slate-50"
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <span className="text-slate-500">
+                          {selectedUserIds.length} of {contacts.length} selected
+                          {contactSearch.trim()
+                            ? ` · ${filteredContacts.length} match filter`
+                            : ''}
+                        </span>
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const ids = filteredContacts.map((c) => c.id)
+                              setSelectedUserIds((prev) =>
+                                Array.from(new Set([...prev, ...ids])),
+                              )
+                            }}
+                            disabled={contactsLoading || filteredContacts.length === 0}
+                            className="rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 font-medium text-indigo-700 hover:bg-indigo-100 disabled:opacity-50"
                           >
-                            <input
-                              type="checkbox"
-                              checked={selectedUserIds.includes(c.id)}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedUserIds((prev) => [...prev, c.id])
-                                } else {
-                                  setSelectedUserIds((prev) =>
-                                    prev.filter((id) => id !== c.id),
-                                  )
-                                }
-                              }}
-                              className="h-4 w-4 rounded border-slate-300 text-indigo-600"
-                            />
-                            <span className="truncate text-sm text-slate-700">{c.email}</span>
-                          </label>
-                        ))}
+                            {contactSearch.trim()
+                              ? `Select ${filteredContacts.length} visible`
+                              : 'Select all'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setSelectedUserIds([])}
+                            disabled={selectedUserIds.length === 0}
+                            className="rounded-md border border-slate-200 bg-white px-2 py-1 font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50"
+                          >
+                            Clear
+                          </button>
+                        </div>
+                      </div>
+                      <div className="max-h-64 overflow-y-auto rounded-lg border-2 border-slate-200 p-2">
+                        {contactsLoading ? (
+                          <p className="px-2 py-3 text-center text-xs text-slate-500">
+                            Loading members…
+                          </p>
+                        ) : filteredContacts.length === 0 ? (
+                          <p className="px-2 py-3 text-center text-xs text-slate-500">
+                            No matching members.
+                          </p>
+                        ) : (
+                          filteredContacts.map((c) => (
+                            <label
+                              key={c.id}
+                              className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-slate-50"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedUserIds.includes(c.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedUserIds((prev) => [...prev, c.id])
+                                  } else {
+                                    setSelectedUserIds((prev) =>
+                                      prev.filter((id) => id !== c.id),
+                                    )
+                                  }
+                                }}
+                                className="h-4 w-4 rounded border-slate-300 text-indigo-600"
+                              />
+                              <span className="truncate text-sm text-slate-700">{c.email}</span>
+                            </label>
+                          ))
+                        )}
                       </div>
                     </div>
                   )}

@@ -1,9 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router'
 import { useStaffAuthStore } from '../../stores/staffAuthStore'
 import { staffJson, StaffApiError } from '../../services/staffApi'
 
 type ReferredBy = { id: string; email: string; referralCode: string }
+
+type Label = { id: string; name: string; color: string }
 
 type Row = {
   id: string
@@ -14,13 +16,29 @@ type Row = {
   isEmailVerified?: boolean
   referralCode?: string
   referredBy?: ReferredBy | null
+  crmLabelIds?: string[]
 }
 
 export function AgentClientsPage() {
   const token = useStaffAuthStore((s) => s.agent?.token ?? null)
   const [q, setQ] = useState('')
   const [rows, setRows] = useState<Row[]>([])
+  const [labels, setLabels] = useState<Label[]>([])
   const [error, setError] = useState<string | null>(null)
+
+  /** id → label lookup so each row can render colored label chips. */
+  const labelById = useMemo(() => {
+    const m = new Map<string, Label>()
+    for (const l of labels) m.set(l.id, l)
+    return m
+  }, [labels])
+
+  useEffect(() => {
+    if (!token) return
+    void staffJson<{ labels: Label[] }>('/agent/labels', token)
+      .then((res) => setLabels(res.labels))
+      .catch(() => setLabels([]))
+  }, [token])
 
   useEffect(() => {
     if (!token) return
@@ -82,6 +100,22 @@ export function AgentClientsPage() {
                       Unverified
                     </span>
                   )}
+                  {(u.crmLabelIds ?? [])
+                    .map((id) => labelById.get(id))
+                    .filter((l): l is Label => !!l)
+                    .map((l) => (
+                      <span
+                        key={l.id}
+                        className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-700"
+                      >
+                        <span
+                          className="h-1.5 w-1.5 rounded-full"
+                          style={{ backgroundColor: l.color }}
+                          aria-hidden
+                        />
+                        {l.name}
+                      </span>
+                    ))}
                 </div>
                 {u.referralCode ? (
                   <p className="mt-1 text-xs text-slate-500">
