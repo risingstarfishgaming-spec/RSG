@@ -31,8 +31,13 @@ const AdminLayout = lazy(() =>
 const AdminLogin = lazy(() =>
   import('../pages/staff/AdminLogin').then((m) => ({ default: m.AdminLogin })),
 )
-const AdminSmsPage = lazy(() =>
-  import('../pages/staff/AdminSmsPage').then((m) => ({ default: m.AdminSmsPage })),
+const AdminLabelsPage = lazy(() =>
+  import('../pages/staff/AdminLabelsPage').then((m) => ({ default: m.AdminLabelsPage })),
+)
+const AdminEmailPromotionsPage = lazy(() =>
+  import('../pages/staff/AdminEmailPromotionsPage').then((m) => ({
+    default: m.AdminEmailPromotionsPage,
+  })),
 )
 const AdminSupportPage = lazy(() =>
   import('../pages/staff/AdminSupportPage').then((m) => ({ default: m.AdminSupportPage })),
@@ -78,9 +83,8 @@ function StaffRouteFallback() {
 }
 
 function RequireStaffRole({ role }: { role: StaffRole }) {
-  const token = useStaffAuthStore((s) => s.token)
-  const staff = useStaffAuthStore((s) => s.staff)
-  if (!token || !staff) {
+  const session = useStaffAuthStore((s) => (role === 'admin' ? s.admin : s.agent))
+  if (!session?.token || !session.staff) {
     return (
       <Navigate
         to={role === 'admin' ? '/admin/login' : '/agent/login'}
@@ -88,10 +92,18 @@ function RequireStaffRole({ role }: { role: StaffRole }) {
       />
     )
   }
-  if (staff.role !== role) {
+  /**
+   * Defense in depth: the per-role storage slots and `readSession` validation
+   * already prevent a mismatched session from landing here under normal flow,
+   * and the backend enforces role on every API call. This extra check guards
+   * against store-state corruption (e.g. direct `setState`, future bugs in
+   * `setAuth`, regressions in storage validation) so we never render a page
+   * the user isn't entitled to.
+   */
+  if (session.staff.role !== role) {
     return (
       <Navigate
-        to={staff.role === 'admin' ? '/admin' : '/agent'}
+        to={session.staff.role === 'admin' ? '/admin' : '/agent'}
         replace
       />
     )
@@ -106,7 +118,7 @@ function RequireAgentPermission({
   perm: AgentPermission
   children: ReactNode
 }) {
-  const staff = useStaffAuthStore((s) => s.staff)
+  const staff = useStaffAuthStore((s) => s.agent?.staff ?? null)
   if (!agentCan(staff, perm)) {
     return (
       <Navigate
@@ -130,12 +142,14 @@ export default function SuperStaffRoutes() {
           <Route path="admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
             <Route path="users" element={<AdminUsersPage />} />
+            <Route path="labels" element={<AdminLabelsPage />} />
+            <Route path="email" element={<AdminEmailPromotionsPage />} />
             <Route path="agents" element={<AdminAgentsPage />} />
             <Route path="platforms" element={<AdminPlatformsPage />} />
             <Route path="bonuses" element={<AdminBonusesPage />} />
             <Route path="support" element={<AdminSupportPage />} />
             <Route path="analytics" element={<AdminAnalyticsPage />} />
-            <Route path="sms" element={<AdminSmsPage />} />
+            <Route path="sms" element={<Navigate to="/admin/email" replace />} />
             <Route path="chat" element={<AdminChatPage />} />
           </Route>
         </Route>

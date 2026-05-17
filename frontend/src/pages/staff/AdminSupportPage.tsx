@@ -63,7 +63,7 @@ const CATEGORIES = [
 ]
 
 export function AdminSupportPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.admin?.token ?? null)
   const [tickets, setTickets] = useState<TicketRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [updating, setUpdating] = useState<string | null>(null)

@@ -13,7 +13,7 @@ type Overview = {
 }
 
 export function AdminAnalyticsPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.admin?.token ?? null)
   const [days, setDays] = useState(14)
   const [data, setData] = useState<Overview | null>(null)
   const [error, setError] = useState<string | null>(null)

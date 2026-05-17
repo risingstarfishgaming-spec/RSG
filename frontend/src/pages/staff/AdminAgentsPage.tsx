@@ -25,7 +25,7 @@ function defaultPermissions(): AgentPermission[] {
 }
 
 export function AdminAgentsPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.admin?.token ?? null)
   const [agents, setAgents] = useState<AgentRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)

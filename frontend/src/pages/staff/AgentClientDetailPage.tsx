@@ -27,7 +27,7 @@ type UserDetail = {
 
 export function AgentClientDetailPage() {
   const { id } = useParams<{ id: string }>()
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.agent?.token ?? null)
   const [data, setData] = useState<UserDetail | null>(null)
   const [catalog, setCatalog] = useState<Label[]>([])
   const [messages, setMessages] = useState<Msg[]>([])

@@ -2,7 +2,7 @@ import { AdminChatPanel } from '../../components/staff/chat/AdminChatPanel'
 import { useStaffAuthStore } from '../../stores/staffAuthStore'
 
 export function AgentChatPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.agent?.token ?? null)
   return (
     <div className="flex min-h-0 flex-1 flex-col lg:-mx-2">
       {/*

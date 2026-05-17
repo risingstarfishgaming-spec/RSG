@@ -9,13 +9,14 @@ import {
   MessageCircle,
   PanelLeftClose,
   PanelLeft,
-  Send,
+  Mail,
+  Tag,
   UserCog,
   Users,
   LogOut,
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { useStaffAuthStore } from '../../stores/staffAuthStore'
+import { useStaffSession } from '../../stores/staffAuthStore'
 import { adminSectionTitle } from './adminSectionTitle'
 
 const navLinkClass = ({
@@ -38,13 +39,14 @@ type NavItem = { to: string; end?: boolean; label: string; Icon: typeof Users }
 const NAV: NavItem[] = [
   { to: '/admin', end: true, label: 'Overview', Icon: LayoutDashboard },
   { to: '/admin/users', label: 'Users', Icon: Users },
+  { to: '/admin/labels', label: 'Labels', Icon: Tag },
+  { to: '/admin/email', label: 'Email promotions', Icon: Mail },
   { to: '/admin/agents', label: 'Agents', Icon: UserCog },
   { to: '/admin/platforms', label: 'Platforms', Icon: Layers },
   { to: '/admin/bonuses', label: 'Bonuses', Icon: Gift },
   { to: '/admin/support', label: 'Support', Icon: LifeBuoy },
   { to: '/admin/chat', label: 'Live chat', Icon: MessageCircle },
   { to: '/admin/analytics', label: 'Analytics', Icon: BarChart2 },
-  { to: '/admin/sms', label: 'Bulk SMS', Icon: Send },
 ]
 
 function SidebarNav({
@@ -76,8 +78,7 @@ function SidebarNav({
 export function AdminLayout() {
   const location = useLocation()
   const title = adminSectionTitle(location.pathname)
-  const logout = useStaffAuthStore((s) => s.logout)
-  const staff = useStaffAuthStore((s) => s.staff)
+  const { staff, logout } = useStaffSession('admin')
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)

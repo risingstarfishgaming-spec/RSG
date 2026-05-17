@@ -46,7 +46,7 @@ const AGENT_STATUSES = [
 ] as const
 
 export function AgentSupportPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.agent?.token ?? null)
   const [tickets, setTickets] = useState<TicketRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [updating, setUpdating] = useState<string | null>(null)

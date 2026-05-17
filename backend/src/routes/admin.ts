@@ -17,8 +17,8 @@ import {
 } from '../middleware/authenticateStaff.js'
 import { HttpError } from '../utils/HttpError.js'
 import { getStaffDashboardSummary } from '../utils/staffDashboardSummary.js'
-import { sendBulkSms } from '../services/smsService.js'
 import { chatStaffRouter } from './chatStaff.js'
+import { emailPromotionsRouter } from './emailPromotions.js'
 
 export const adminRouter = Router()
 
@@ -38,6 +38,8 @@ const pagination = z.object({
   page: z.coerce.number().int().min(1).optional().default(1),
   limit: z.coerce.number().int().min(1).max(100).optional().default(25),
   q: z.string().trim().max(120).optional(),
+  /** Comma-separated CRM label ids — users with any selected label */
+  labelIds: z.string().trim().max(2000).optional(),
 })
 
 function referredBySummary(u: Record<string, unknown>) {
@@ -182,8 +184,19 @@ adminRouter.get('/users', async (req, res, next) => {
   try {
     const parsed = pagination.safeParse(req.query)
     if (!parsed.success) throw new HttpError(400, 'Invalid query')
-    const { page, limit, q } = parsed.data
+    const { page, limit, q, labelIds: labelIdsRaw } = parsed.data
     const filter: Record<string, unknown> = {}
+    if (labelIdsRaw) {
+      const labelOids = labelIdsRaw
+        .split(',')
+        .map((s) => s.trim())
+        .filter((id) => mongoose.Types.ObjectId.isValid(id))
+        .map((id) => new mongoose.Types.ObjectId(id))
+      if (labelOids.length === 0) {
+        throw new HttpError(400, 'Invalid labelIds query')
+      }
+      filter.crmLabelIds = { $in: labelOids }
+    }
     if (q) {
       const rx = new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       filter.$or = [
@@ -558,41 +571,6 @@ adminRouter.post('/support/tickets/:id/reply', async (req, res, next) => {
   }
 })
 
-const bulkSmsSchema = z.object({
-  message: z.string().trim().min(1).max(1600),
-  /** Send to these users by id (uses stored phone numbers). */
-  userIds: z.array(z.string().min(24).max(24)).min(1).max(500),
-})
-
-adminRouter.post('/sms/bulk', async (req, res, next) => {
-  try {
-    const parsed = bulkSmsSchema.safeParse(req.body)
-    if (!parsed.success) {
-      const msg = parsed.error.issues.map((i) => i.message).join(', ')
-      throw new HttpError(400, msg)
-    }
-    const oids = parsed.data.userIds.filter((id) =>
-      mongoose.Types.ObjectId.isValid(id),
-    )
-    const users = await User.find({ _id: { $in: oids } })
-      .select('phoneNumber')
-      .lean()
-    const phoneNumbers = users
-      .map((u) => u.phoneNumber)
-      .filter((n): n is string => typeof n === 'string' && n.trim() !== '')
-    const result = await sendBulkSms({
-      message: parsed.data.message,
-      phoneNumbers,
-    })
-    res.json({
-      message: 'Bulk SMS accepted (provider stub — configure SMS in production).',
-      ...result,
-    })
-  } catch (e) {
-    next(e)
-  }
-})
-
 adminRouter.get('/analytics/overview', async (req, res, next) => {
   try {
     const days = z.coerce.number().int().min(1).max(90).optional().default(7).safeParse(
@@ -668,6 +646,14 @@ const adminLabelSchema = z.object({
   color: z.string().trim().max(32).optional().default('#FFD700'),
 })
 
+function labelPublic(l: { _id: mongoose.Types.ObjectId; name: string; color: string }) {
+  return {
+    id: l._id.toString(),
+    name: l.name,
+    color: l.color,
+  }
+}
+
 adminRouter.post('/labels', async (req, res, next) => {
   try {
     const r = req as unknown as StaffAuthedRequest
@@ -683,11 +669,7 @@ adminRouter.post('/labels', async (req, res, next) => {
     })
     res.status(201).json({
       success: true,
-      data: {
-        _id: label._id.toString(),
-        name: label.name,
-        color: label.color,
-      },
+      data: labelPublic(label),
     })
   } catch (e: unknown) {
     if (
@@ -708,12 +690,56 @@ adminRouter.get('/labels', async (_req, res, next) => {
     const labels = await Label.find().sort({ name: 1 }).lean()
     res.json({
       success: true,
-      data: labels.map((l) => ({
-        _id: l._id.toString(),
-        name: l.name,
-        color: l.color,
-      })),
+      data: labels.map((l) => labelPublic(l)),
     })
+  } catch (e) {
+    next(e)
+  }
+})
+
+adminRouter.put('/labels/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new HttpError(400, 'Invalid label id')
+    }
+    const parsed = adminLabelSchema.safeParse(req.body)
+    if (!parsed.success) {
+      const msg = parsed.error.issues.map((i) => i.message).join(', ')
+      throw new HttpError(400, msg)
+    }
+    const label = await Label.findByIdAndUpdate(
+      id,
+      { name: parsed.data.name, color: parsed.data.color },
+      { new: true, runValidators: true },
+    ).lean()
+    if (!label) throw new HttpError(404, 'Label not found')
+    res.json({ success: true, data: labelPublic(label) })
+  } catch (e: unknown) {
+    if (
+      e &&
+      typeof e === 'object' &&
+      'code' in e &&
+      (e as { code: number }).code === 11000
+    ) {
+      next(new HttpError(409, 'A label with this name already exists'))
+      return
+    }
+    next(e)
+  }
+})
+
+adminRouter.delete('/labels/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new HttpError(400, 'Invalid label id')
+    }
+    const oid = new mongoose.Types.ObjectId(id)
+    const label = await Label.findByIdAndDelete(id)
+    if (!label) throw new HttpError(404, 'Label not found')
+    await User.updateMany({ crmLabelIds: oid }, { $pull: { crmLabelIds: oid } })
+    res.json({ success: true, message: 'Label deleted' })
   } catch (e) {
     next(e)
   }
@@ -807,4 +833,5 @@ adminRouter.get('/users/:id/notes', async (req, res, next) => {
   }
 })
 
+adminRouter.use('/email-promotions', emailPromotionsRouter)
 adminRouter.use('/chat', chatStaffRouter)

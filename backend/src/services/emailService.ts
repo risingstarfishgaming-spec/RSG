@@ -41,12 +41,22 @@ function formatBrevoError(err: unknown): string {
   return err.message + (status ? ` (HTTP ${status})` : '')
 }
 
+type BrevoAttachment = {
+  /** Display name shown in the email client. */
+  name: string
+  /** Base64-encoded file content (REST API spec). */
+  content: string
+}
+
 type BrevoPayload = {
   sender: { name: string; email: string }
-  to: { email: string; name: string }[]
+  to: { email: string; name?: string }[]
+  bcc?: { email: string; name?: string }[]
   replyTo?: { email: string; name?: string }
   subject: string
   htmlContent: string
+  tags?: string[]
+  attachment?: BrevoAttachment[]
 }
 
 async function postTransactionalEmail(payload: BrevoPayload): Promise<void> {
@@ -230,4 +240,101 @@ export async function sendPasswordResetEmail(params: {
   if (replyTo) payload.replyTo = replyTo
 
   await postTransactionalEmail(payload)
+}
+
+export type PromotionalSendResult = {
+  total: number
+  successful: number
+  failed: number
+  errors: string[]
+}
+
+/**
+ * Send a promotional HTML email to many recipients.
+ *
+ * Sends one email per recipient (parallelised in small chunks) so each person
+ * sees **their own address** in the "To" field — not a BCC, not the sender.
+ * BCC blasts hide the recipient list, which looked like the email wasn't
+ * addressed to them; this is the standard transactional-marketing pattern.
+ *
+ * Attachments are forwarded to Brevo's native `attachment` field (NOT embedded
+ * as base64 data-URIs inside the HTML), which keeps the body well under
+ * Gmail's 102KB clipping threshold even for multi-megabyte files.
+ */
+export async function sendPromotionalEmailBatches(params: {
+  subject: string
+  htmlContent: string
+  recipientEmails: string[]
+  attachments?: BrevoAttachment[]
+}): Promise<PromotionalSendResult> {
+  const { subject, htmlContent, recipientEmails, attachments } = params
+  const unique = [...new Set(recipientEmails.map((e) => e.trim().toLowerCase()).filter(Boolean))]
+  const result: PromotionalSendResult = {
+    total: unique.length,
+    successful: 0,
+    failed: 0,
+    errors: [],
+  }
+
+  if (unique.length === 0) {
+    return result
+  }
+
+  if (env.skipEmail) {
+    logger.info(
+      `[SKIP_EMAIL=true] Promotional email "${subject}" → ${unique.length} recipient(s)`,
+    )
+    result.successful = unique.length
+    return result
+  }
+
+  if (!brevoConfigured()) {
+    if (env.nodeEnv === 'production') {
+      throw new Error('Email service is not configured. Please contact support.')
+    }
+    logger.warn('BREVO_API_KEY missing — promotional email not sent')
+    result.failed = unique.length
+    result.errors.push('Brevo not configured')
+    return result
+  }
+
+  const base: Omit<BrevoPayload, 'to' | 'bcc'> = {
+    sender: { name: env.brevoFromName, email: env.brevoFromEmail },
+    subject,
+    htmlContent,
+    tags: ['promotional'],
+  }
+  const replyTo = defaultReplyTo()
+  if (replyTo) base.replyTo = replyTo
+  if (attachments && attachments.length > 0) base.attachment = attachments
+
+  /** Parallelise in small chunks; respect Brevo rate limits (~10–20 req/s). */
+  const CONCURRENCY = 5
+  for (let i = 0; i < unique.length; i += CONCURRENCY) {
+    const slice = unique.slice(i, i + CONCURRENCY)
+    const outcomes = await Promise.allSettled(
+      slice.map((email) =>
+        postTransactionalEmail({
+          ...base,
+          to: [{ email }],
+        }),
+      ),
+    )
+    for (let j = 0; j < outcomes.length; j++) {
+      const o = outcomes[j]
+      if (o.status === 'fulfilled') {
+        result.successful += 1
+      } else {
+        result.failed += 1
+        const detail = o.reason instanceof Error ? o.reason.message : String(o.reason)
+        result.errors.push(`${slice[j]}: ${detail}`)
+      }
+    }
+    /** Small inter-chunk pause helps avoid 429s on larger lists. */
+    if (i + CONCURRENCY < unique.length) {
+      await new Promise((r) => setTimeout(r, 250))
+    }
+  }
+
+  return result
 }

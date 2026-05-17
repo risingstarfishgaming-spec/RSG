@@ -50,7 +50,7 @@ function isoInput(d?: string) {
 }
 
 export function AdminBonusesPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.admin?.token ?? null)
   const [rows, setRows] = useState<Bonus[]>([])
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)

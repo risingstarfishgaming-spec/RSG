@@ -18,7 +18,7 @@ type Row = {
 }
 
 export function AdminUsersPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.admin?.token ?? null)
   const [q, setQ] = useState('')
   const [rows, setRows] = useState<Row[]>([])
   const [total, setTotal] = useState(0)

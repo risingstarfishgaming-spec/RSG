@@ -17,7 +17,7 @@ type Row = {
 }
 
 export function AgentClientsPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.agent?.token ?? null)
   const [q, setQ] = useState('')
   const [rows, setRows] = useState<Row[]>([])
   const [error, setError] = useState<string | null>(null)

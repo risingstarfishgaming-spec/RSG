@@ -1,11 +1,10 @@
 import { Link } from 'react-router'
 import { StaffOverviewMetrics } from '../../components/staff/StaffOverviewMetrics'
-import { useStaffAuthStore } from '../../stores/staffAuthStore'
+import { useStaffSession } from '../../stores/staffAuthStore'
 import { agentCan } from '../../utils/agentPermissions'
 
 export function AgentDashboard() {
-  const token = useStaffAuthStore((s) => s.token)
-  const staff = useStaffAuthStore((s) => s.staff)
+  const { token, staff } = useStaffSession('agent')
   const canClients = agentCan(staff, 'clients')
   const canReferrals = agentCan(staff, 'referrals')
   const canSupport = agentCan(staff, 'support')

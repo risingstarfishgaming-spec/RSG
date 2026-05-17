@@ -28,7 +28,7 @@ type ReferralRow = {
 type Filter = 'all' | 'pending' | 'verified'
 
 export function AgentReferralsPage() {
-  const token = useStaffAuthStore((s) => s.token)
+  const token = useStaffAuthStore((s) => s.agent?.token ?? null)
   const [filter, setFilter] = useState<Filter>('all')
   const [rows, setRows] = useState<ReferralRow[]>([])
   const [loading, setLoading] = useState(false)

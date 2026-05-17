@@ -11,7 +11,7 @@ import {
   LogOut,
 } from 'lucide-react'
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { useStaffAuthStore } from '../../stores/staffAuthStore'
+import { useStaffSession } from '../../stores/staffAuthStore'
 import type { StaffUser } from '../../types/staff'
 import { agentCan } from '../../utils/agentPermissions'
 import { agentSectionTitle } from './agentSectionTitle'
@@ -117,8 +117,7 @@ function BottomNav({
 export function AgentLayout() {
   const location = useLocation()
   const title = agentSectionTitle(location.pathname)
-  const logout = useStaffAuthStore((s) => s.logout)
-  const staff = useStaffAuthStore((s) => s.staff)
+  const { staff, logout } = useStaffSession('agent')
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
